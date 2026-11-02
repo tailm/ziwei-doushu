@@ -9,12 +9,34 @@ import type { Book, Paragraph, SearchHit } from './types';
 import { guSuiFu } from './data/gusuifu';
 import { ziWeiQuanJi } from './data/quanji';
 import { ziWeiQuanShu } from './data/quanshu';
+import { zhouYi } from './data/zhouyi';
+import { baGua } from './data/bagua';
+import { heTuLuoShu } from './data/hetu-luoshu';
+import { zangShu } from './data/zangshu';
+import { qingNangJing } from './data/qingnangjing';
+import { hanLongJing } from './data/hanlongjing';
+import { xueXinFu } from './data/xuexinfu';
+import { daoDeJing } from './data/daodejing';
+import { zhuangZi } from './data/zhuangzi';
+import { lieZi } from './data/liezi';
+import { huaiNanZi } from './data/huainanzi';
 
 /** 所有已收录古籍 */
 export const ALL_BOOKS: Book[] = [
   guSuiFu,
   ziWeiQuanJi,
   ziWeiQuanShu,
+  zhouYi,
+  baGua,
+  heTuLuoShu,
+  zangShu,
+  qingNangJing,
+  hanLongJing,
+  xueXinFu,
+  daoDeJing,
+  zhuangZi,
+  lieZi,
+  huaiNanZi,
 ];
 
 /** 总段落数（用于首页统计） */

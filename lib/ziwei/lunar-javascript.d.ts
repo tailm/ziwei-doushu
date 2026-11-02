@@ -1,9 +1,9 @@
 declare module 'lunar-javascript' {
   class Lunar {
-    /** month 为负表示闰月（如 -5 = 闰五月） */
     static fromYmd(year: number, month: number, day: number): Lunar;
+    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number):BaziLunar;
     getYear(): number;
-    getMonth(): number;  // negative = leap month
+    getMonth(): number;
     getDay(): number;
     getYearGan(): string;
     getYearZhi(): string;
@@ -11,22 +11,99 @@ declare module 'lunar-javascript' {
     getMonthZhi(): string;
     getDayGan(): string;
     getDayZhi(): string;
-    /** 换算成公历(2026-08-05 补声明:lib/ziwei/share.ts 早在用，只是从前靠 as any 绕过) */
     getSolar(): Solar;
+    getEightChar(): EightChar;
+    getJieQiTable(): Record<string, Solar>;
+    getDayInGanZhi(): string;
+    getMonthInGanZhiExact(): string;
+    getDayJiShen(): string[];
+    getDayXiongSha(): string[];
+    getDayYi(): string[];
+    getDayJi(): string[];
+    getYearInChinese(): string;
+    getMonthInChinese(): string;
+    getDayInChinese(): string;
+    getYearShengXiao(): string;
+    getMonthShengXiao(): string;
+    getDayShengXiao(): string;
+    getPrevJieQi(): JieQi | null;
+    getNextJieQi(): JieQi | null;
+    getChongDesc(): string;
+    getSha(): string;
+    getDayXunKong(): string;
+    getDayPositionTai(): string;
+    getDayTianShen(): string;
+    getDayPositionCaiDesc(): string;
+    getDayPositionXiDesc(): string;
+    getDayPositionFuDesc(): string;
+    getDayPositionYangGuiDesc(): string;
+    getXiu(): string;
+    getGong(): string;
+    getShou(): string;
+    getXiuLuck(): string;
+    getYueXiang(): string;
+    getLiuYao(): string;
+    getDayNineStar(): { toString(): string };
+    getWuHou(): string;
+    getHou(): string;
   }
 
   class Solar {
     static fromYmd(year: number, month: number, day: number): Solar;
+    static fromYmdHms(year: number, month: number, day: number, hour: number, minute: number, second: number): Solar;
     getLunar(): Lunar;
     getYear(): number;
     getMonth(): number;
     getDay(): number;
+    getHour(): number;
+    getMinute(): number;
+    toYmdHms(): string;
   }
 
-  /** 农历月信息(2026-06-10 补:闰月大小月边界 clamp 用) */
   class LunarMonth {
-    /** month 为负表示闰月(如 -5 = 闰五月);查无此月返回 null */
     static fromYm(year: number, month: number): LunarMonth | null;
     getDayCount(): number;
+  }
+
+  class LunarYear {
+    static fromYear(year: number): LunarYear;
+    getLeapMonth(): number;
+  }
+
+  class EightChar {
+    getYearGan(): string;
+    getYearZhi(): string;
+    getMonthGan(): string;
+    getMonthZhi(): string;
+    getDayGan(): string;
+    getDayZhi(): string;
+    getTimeGan(): string;
+    getTimeZhi(): string;
+    getYearNaYin(): string;
+    getMonthNaYin(): string;
+    getDayNaYin(): string;
+    setSect(sect: number): void;
+    getYun(gender: number, sect: number): Yun;
+  }
+
+  class Yun {
+    getStartYear(): number;
+    getStartMonth(): number;
+    getStartDay(): number;
+    getStartHour(): number;
+    isForward(): boolean;
+    getStartSolar(): Solar;
+    getDaYun(): DaYun[];
+  }
+
+  class JieQi {
+    getName(): string;
+    getSolar(): Solar;
+  }
+
+  class DaYun {
+    getGanZhi(): string;
+    getStartYear(): number;
+    getStartAge(): number;
   }
 }

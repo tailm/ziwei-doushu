@@ -8,6 +8,19 @@ export interface ProvinceInfo {
   cities: CityInfo[];
 }
 
+export interface ForeignCityInfo {
+  name: string;
+  nameEn: string;
+  longitude: number;
+  timezoneOffset: number; // UTC offset in minutes (e.g. -300 = UTC-5, 480 = UTC+8)
+}
+
+export interface CountryInfo {
+  name: string;
+  nameEn: string;
+  cities: ForeignCityInfo[];
+}
+
 // ★ 2026-10-07 用户反馈「出生地点还不够全」→ 补全全国区县（直辖市以外 2724 个，挂在各地级市下）。
 //   区县不放进本表：本表经 BirthForm → LocationPicker 在 /chart、/heming 首屏静态依赖图上，
 //   区县表与拼音表在 lib/ziwei/counties.generated.ts、lib/i18n/county-pinyin.generated.ts，
@@ -699,6 +712,279 @@ export const PROVINCES: ProvinceInfo[] = [
     ],
   },
 
-  // 注：海外出生暂未支持，因 share.ts 真太阳时算法假设输入为北京时间(UTC+8)。
-  // 海外用户请把当地时间换算成北京时间再填写（或填出生时所在的中国时区相对城市）。
+];
+
+// ★ timezoneOffset 使用标准时间偏移（不含夏令时）。夏令时期间出生者需手动调整1小时。
+//   经度可为负值（西半球）。真太阳时 = UTC + 经度×4分钟，与时区无关。
+export const COUNTRIES: CountryInfo[] = [
+  {
+    name: '美国',
+    nameEn: 'United States',
+    cities: [
+      { name: '纽约', nameEn: 'New York', longitude: -74.0, timezoneOffset: -300 },
+      { name: '波士顿', nameEn: 'Boston', longitude: -71.1, timezoneOffset: -300 },
+      { name: '华盛顿', nameEn: 'Washington', longitude: -77.0, timezoneOffset: -300 },
+      { name: '费城', nameEn: 'Philadelphia', longitude: -75.2, timezoneOffset: -300 },
+      { name: '迈阿密', nameEn: 'Miami', longitude: -80.2, timezoneOffset: -300 },
+      { name: '亚特兰大', nameEn: 'Atlanta', longitude: -84.4, timezoneOffset: -300 },
+      { name: '芝加哥', nameEn: 'Chicago', longitude: -87.6, timezoneOffset: -360 },
+      { name: '休斯顿', nameEn: 'Houston', longitude: -95.4, timezoneOffset: -360 },
+      { name: '达拉斯', nameEn: 'Dallas', longitude: -96.8, timezoneOffset: -360 },
+      { name: '丹佛', nameEn: 'Denver', longitude: -105.0, timezoneOffset: -420 },
+      { name: '洛杉矶', nameEn: 'Los Angeles', longitude: -118.2, timezoneOffset: -480 },
+      { name: '旧金山', nameEn: 'San Francisco', longitude: -122.4, timezoneOffset: -480 },
+      { name: '西雅图', nameEn: 'Seattle', longitude: -122.3, timezoneOffset: -480 },
+      { name: '圣地亚哥', nameEn: 'San Diego', longitude: -117.2, timezoneOffset: -480 },
+      { name: '拉斯维加斯', nameEn: 'Las Vegas', longitude: -115.1, timezoneOffset: -480 },
+      { name: '波特兰', nameEn: 'Portland', longitude: -122.7, timezoneOffset: -480 },
+      { name: '安克雷奇', nameEn: 'Anchorage', longitude: -149.9, timezoneOffset: -540 },
+      { name: '檀香山', nameEn: 'Honolulu', longitude: -157.9, timezoneOffset: -600 },
+    ],
+  },
+  {
+    name: '加拿大',
+    nameEn: 'Canada',
+    cities: [
+      { name: '多伦多', nameEn: 'Toronto', longitude: -79.4, timezoneOffset: -300 },
+      { name: '蒙特利尔', nameEn: 'Montreal', longitude: -73.6, timezoneOffset: -300 },
+      { name: '温哥华', nameEn: 'Vancouver', longitude: -123.1, timezoneOffset: -480 },
+      { name: '卡尔加里', nameEn: 'Calgary', longitude: -114.1, timezoneOffset: -420 },
+      { name: '埃德蒙顿', nameEn: 'Edmonton', longitude: -113.5, timezoneOffset: -420 },
+      { name: '渥太华', nameEn: 'Ottawa', longitude: -75.7, timezoneOffset: -300 },
+      { name: '温尼伯', nameEn: 'Winnipeg', longitude: -97.1, timezoneOffset: -360 },
+    ],
+  },
+  {
+    name: '英国',
+    nameEn: 'United Kingdom',
+    cities: [
+      { name: '伦敦', nameEn: 'London', longitude: -0.1, timezoneOffset: 0 },
+      { name: '曼彻斯特', nameEn: 'Manchester', longitude: -2.2, timezoneOffset: 0 },
+      { name: '伯明翰', nameEn: 'Birmingham', longitude: -1.9, timezoneOffset: 0 },
+      { name: '爱丁堡', nameEn: 'Edinburgh', longitude: -3.2, timezoneOffset: 0 },
+      { name: '利物浦', nameEn: 'Liverpool', longitude: -3.0, timezoneOffset: 0 },
+      { name: '剑桥', nameEn: 'Cambridge', longitude: 0.1, timezoneOffset: 0 },
+      { name: '牛津', nameEn: 'Oxford', longitude: -1.3, timezoneOffset: 0 },
+    ],
+  },
+  {
+    name: '法国',
+    nameEn: 'France',
+    cities: [
+      { name: '巴黎', nameEn: 'Paris', longitude: 2.3, timezoneOffset: 60 },
+      { name: '里昂', nameEn: 'Lyon', longitude: 4.8, timezoneOffset: 60 },
+      { name: '马赛', nameEn: 'Marseille', longitude: 5.4, timezoneOffset: 60 },
+      { name: '尼斯', nameEn: 'Nice', longitude: 7.3, timezoneOffset: 60 },
+      { name: '波尔多', nameEn: 'Bordeaux', longitude: -0.6, timezoneOffset: 60 },
+      { name: '斯特拉斯堡', nameEn: 'Strasbourg', longitude: 7.7, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '德国',
+    nameEn: 'Germany',
+    cities: [
+      { name: '柏林', nameEn: 'Berlin', longitude: 13.4, timezoneOffset: 60 },
+      { name: '慕尼黑', nameEn: 'Munich', longitude: 11.6, timezoneOffset: 60 },
+      { name: '法兰克福', nameEn: 'Frankfurt', longitude: 8.7, timezoneOffset: 60 },
+      { name: '汉堡', nameEn: 'Hamburg', longitude: 10.0, timezoneOffset: 60 },
+      { name: '科隆', nameEn: 'Cologne', longitude: 6.9, timezoneOffset: 60 },
+      { name: '斯图加特', nameEn: 'Stuttgart', longitude: 9.2, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '澳大利亚',
+    nameEn: 'Australia',
+    cities: [
+      { name: '悉尼', nameEn: 'Sydney', longitude: 151.2, timezoneOffset: 600 },
+      { name: '墨尔本', nameEn: 'Melbourne', longitude: 144.9, timezoneOffset: 600 },
+      { name: '布里斯班', nameEn: 'Brisbane', longitude: 153.0, timezoneOffset: 600 },
+      { name: '珀斯', nameEn: 'Perth', longitude: 115.9, timezoneOffset: 480 },
+      { name: '阿德莱德', nameEn: 'Adelaide', longitude: 138.6, timezoneOffset: 570 },
+      { name: '堪培拉', nameEn: 'Canberra', longitude: 149.1, timezoneOffset: 600 },
+      { name: '霍巴特', nameEn: 'Hobart', longitude: 147.3, timezoneOffset: 600 },
+    ],
+  },
+  {
+    name: '新西兰',
+    nameEn: 'New Zealand',
+    cities: [
+      { name: '奥克兰', nameEn: 'Auckland', longitude: 174.8, timezoneOffset: 720 },
+      { name: '惠灵顿', nameEn: 'Wellington', longitude: 174.8, timezoneOffset: 720 },
+      { name: '基督城', nameEn: 'Christchurch', longitude: 172.6, timezoneOffset: 720 },
+    ],
+  },
+  {
+    name: '日本',
+    nameEn: 'Japan',
+    cities: [
+      { name: '东京', nameEn: 'Tokyo', longitude: 139.7, timezoneOffset: 540 },
+      { name: '大阪', nameEn: 'Osaka', longitude: 135.5, timezoneOffset: 540 },
+      { name: '京都', nameEn: 'Kyoto', longitude: 135.8, timezoneOffset: 540 },
+      { name: '名古屋', nameEn: 'Nagoya', longitude: 136.9, timezoneOffset: 540 },
+      { name: '横滨', nameEn: 'Yokohama', longitude: 139.6, timezoneOffset: 540 },
+      { name: '福冈', nameEn: 'Fukuoka', longitude: 130.4, timezoneOffset: 540 },
+      { name: '札幌', nameEn: 'Sapporo', longitude: 141.3, timezoneOffset: 540 },
+    ],
+  },
+  {
+    name: '韩国',
+    nameEn: 'South Korea',
+    cities: [
+      { name: '首尔', nameEn: 'Seoul', longitude: 127.0, timezoneOffset: 540 },
+      { name: '釜山', nameEn: 'Busan', longitude: 129.1, timezoneOffset: 540 },
+      { name: '仁川', nameEn: 'Incheon', longitude: 126.7, timezoneOffset: 540 },
+      { name: '大邱', nameEn: 'Daegu', longitude: 128.6, timezoneOffset: 540 },
+    ],
+  },
+  {
+    name: '新加坡',
+    nameEn: 'Singapore',
+    cities: [
+      { name: '新加坡', nameEn: 'Singapore', longitude: 103.8, timezoneOffset: 480 },
+    ],
+  },
+  {
+    name: '马来西亚',
+    nameEn: 'Malaysia',
+    cities: [
+      { name: '吉隆坡', nameEn: 'Kuala Lumpur', longitude: 101.7, timezoneOffset: 480 },
+      { name: '槟城', nameEn: 'Penang', longitude: 100.3, timezoneOffset: 480 },
+      { name: '新山', nameEn: 'Johor Bahru', longitude: 103.8, timezoneOffset: 480 },
+    ],
+  },
+  {
+    name: '泰国',
+    nameEn: 'Thailand',
+    cities: [
+      { name: '曼谷', nameEn: 'Bangkok', longitude: 100.5, timezoneOffset: 420 },
+      { name: '清迈', nameEn: 'Chiang Mai', longitude: 98.9, timezoneOffset: 420 },
+      { name: '普吉', nameEn: 'Phuket', longitude: 98.4, timezoneOffset: 420 },
+    ],
+  },
+  {
+    name: '越南',
+    nameEn: 'Vietnam',
+    cities: [
+      { name: '河内', nameEn: 'Hanoi', longitude: 105.9, timezoneOffset: 420 },
+      { name: '胡志明市', nameEn: 'Ho Chi Minh City', longitude: 106.7, timezoneOffset: 420 },
+    ],
+  },
+  {
+    name: '意大利',
+    nameEn: 'Italy',
+    cities: [
+      { name: '罗马', nameEn: 'Rome', longitude: 12.5, timezoneOffset: 60 },
+      { name: '米兰', nameEn: 'Milan', longitude: 9.2, timezoneOffset: 60 },
+      { name: '佛罗伦萨', nameEn: 'Florence', longitude: 11.3, timezoneOffset: 60 },
+      { name: '威尼斯', nameEn: 'Venice', longitude: 12.3, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '西班牙',
+    nameEn: 'Spain',
+    cities: [
+      { name: '马德里', nameEn: 'Madrid', longitude: -3.7, timezoneOffset: 60 },
+      { name: '巴塞罗那', nameEn: 'Barcelona', longitude: 2.2, timezoneOffset: 60 },
+      { name: '瓦伦西亚', nameEn: 'Valencia', longitude: -0.4, timezoneOffset: 60 },
+      { name: '塞维利亚', nameEn: 'Seville', longitude: -6.0, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '荷兰',
+    nameEn: 'Netherlands',
+    cities: [
+      { name: '阿姆斯特丹', nameEn: 'Amsterdam', longitude: 4.9, timezoneOffset: 60 },
+      { name: '鹿特丹', nameEn: 'Rotterdam', longitude: 4.5, timezoneOffset: 60 },
+      { name: '海牙', nameEn: 'The Hague', longitude: 4.3, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '瑞士',
+    nameEn: 'Switzerland',
+    cities: [
+      { name: '苏黎世', nameEn: 'Zurich', longitude: 8.5, timezoneOffset: 60 },
+      { name: '日内瓦', nameEn: 'Geneva', longitude: 6.1, timezoneOffset: 60 },
+      { name: '巴塞尔', nameEn: 'Basel', longitude: 7.6, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '瑞典',
+    nameEn: 'Sweden',
+    cities: [
+      { name: '斯德哥尔摩', nameEn: 'Stockholm', longitude: 18.1, timezoneOffset: 60 },
+      { name: '哥德堡', nameEn: 'Gothenburg', longitude: 12.0, timezoneOffset: 60 },
+    ],
+  },
+  {
+    name: '俄罗斯',
+    nameEn: 'Russia',
+    cities: [
+      { name: '莫斯科', nameEn: 'Moscow', longitude: 37.6, timezoneOffset: 180 },
+      { name: '圣彼得堡', nameEn: 'St. Petersburg', longitude: 30.3, timezoneOffset: 180 },
+      { name: '海参崴', nameEn: 'Vladivostok', longitude: 131.9, timezoneOffset: 600 },
+    ],
+  },
+  {
+    name: '巴西',
+    nameEn: 'Brazil',
+    cities: [
+      { name: '圣保罗', nameEn: 'São Paulo', longitude: -46.6, timezoneOffset: -180 },
+      { name: '里约热内卢', nameEn: 'Rio de Janeiro', longitude: -43.2, timezoneOffset: -180 },
+      { name: '巴西利亚', nameEn: 'Brasília', longitude: -47.9, timezoneOffset: -180 },
+    ],
+  },
+  {
+    name: '阿根廷',
+    nameEn: 'Argentina',
+    cities: [
+      { name: '布宜诺斯艾利斯', nameEn: 'Buenos Aires', longitude: -58.4, timezoneOffset: -180 },
+    ],
+  },
+  {
+    name: '印度',
+    nameEn: 'India',
+    cities: [
+      { name: '新德里', nameEn: 'New Delhi', longitude: 77.2, timezoneOffset: 330 },
+      { name: '孟买', nameEn: 'Mumbai', longitude: 72.8, timezoneOffset: 330 },
+      { name: '班加罗尔', nameEn: 'Bangalore', longitude: 77.6, timezoneOffset: 330 },
+    ],
+  },
+  {
+    name: '印度尼西亚',
+    nameEn: 'Indonesia',
+    cities: [
+      { name: '雅加达', nameEn: 'Jakarta', longitude: 106.8, timezoneOffset: 420 },
+      { name: '泗水', nameEn: 'Surabaya', longitude: 112.8, timezoneOffset: 420 },
+    ],
+  },
+  {
+    name: '菲律宾',
+    nameEn: 'Philippines',
+    cities: [
+      { name: '马尼拉', nameEn: 'Manila', longitude: 121.0, timezoneOffset: 480 },
+    ],
+  },
+  {
+    name: '阿联酋',
+    nameEn: 'United Arab Emirates',
+    cities: [
+      { name: '迪拜', nameEn: 'Dubai', longitude: 55.3, timezoneOffset: 240 },
+      { name: '阿布扎比', nameEn: 'Abu Dhabi', longitude: 54.4, timezoneOffset: 240 },
+    ],
+  },
+  {
+    name: '墨西哥',
+    nameEn: 'Mexico',
+    cities: [
+      { name: '墨西哥城', nameEn: 'Mexico City', longitude: -99.1, timezoneOffset: -360 },
+    ],
+  },
+  {
+    name: '南非',
+    nameEn: 'South Africa',
+    cities: [
+      { name: '约翰内斯堡', nameEn: 'Johannesburg', longitude: 28.0, timezoneOffset: 120 },
+      { name: '开普敦', nameEn: 'Cape Town', longitude: 18.4, timezoneOffset: 120 },
+    ],
+  },
 ];

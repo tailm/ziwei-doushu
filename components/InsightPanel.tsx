@@ -3,6 +3,9 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
+import AiActions from './AiActions';
+import { useLang } from '@/lib/i18n/LanguageContext';
+import { t } from '@/lib/i18n/translations';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -23,12 +26,12 @@ interface InsightPanelProps {
 }
 
 const TOPICS = [
-  { key: 'overview',     label: '命格' },
-  { key: 'love',        label: '感情' },
-  { key: 'career',      label: '事业' },
-  { key: 'wealth',      label: '财运' },
-  { key: 'health',      label: '健康' },
-  { key: 'personality', label: '性格' },
+  { key: 'overview',     labelKey: 'insight_topic_destiny' as const },
+  { key: 'love',        labelKey: 'insight_topic_love' as const },
+  { key: 'career',      labelKey: 'insight_topic_career' as const },
+  { key: 'wealth',      labelKey: 'insight_topic_wealth' as const },
+  { key: 'health',      labelKey: 'insight_topic_health' as const },
+  { key: 'personality', labelKey: 'insight_topic_personality' as const },
 ] as const;
 
 const TOPIC_PROMPTS: Record<string, string> = {
@@ -183,6 +186,7 @@ function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
 }
 
 export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: InsightPanelProps) {
+  const { lang } = useLang();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -279,7 +283,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
       const res = await fetch('/api/interpret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart, messages: apiMessages }),
+        body: JSON.stringify({ chart, messages: apiMessages, lang }),
       });
       if (res.status === 404) throw new Error('api-missing');
       if (!res.ok) throw new Error('请求失败');
@@ -312,7 +316,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
       }
     } catch (e) {
       const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, { role: 'assistant', content: missing ? '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。' : '解读失败，请稍后重试。' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: missing ? t('insight_err_no_api', lang) : t('insight_err_failed', lang) }]);
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -352,12 +356,12 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
       {/* ── Topic buttons ── */}
       <div className="flex-shrink-0 px-2 pt-2.5 pb-2" style={{ borderBottom: '1px solid var(--t-border)' }}>
         <div className="grid grid-cols-6 gap-1">
-          {TOPICS.map(t => {
-            const isActive = activeTopic === t.key;
+          {TOPICS.map(topic => {
+            const isActive = activeTopic === topic.key;
             return (
               <button
-                key={t.key}
-                onClick={() => handleTopicClick(t.key)}
+                key={topic.key}
+                onClick={() => handleTopicClick(topic.key)}
                 disabled={loading}
                 className="py-1.5 text-[10px] font-medium rounded-lg transition-all duration-150 disabled:opacity-40"
                 style={{
@@ -366,7 +370,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
                   color: isActive ? 'var(--t-gold)' : 'var(--t-faint)',
                 }}
               >
-                {t.label}
+                {t(topic.labelKey, lang)}
               </button>
             );
           })}
@@ -380,7 +384,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="text-4xl mb-3" style={{ color: 'var(--t-gold)', opacity: 0.1 }}>✦</div>
-            <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>命格解读生成中…</p>
+            <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>{t('insight_loading', lang)}</p>
           </div>
         )}
 
@@ -423,9 +427,10 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
                   style={{ color: 'var(--t-faint)' }}
                 >
                   <span style={{ color: 'var(--t-gold)', opacity: 0.4 }}>✦</span>
-                  命理解读
+                  {t('insight_label', lang)}
                 </div>
                 <AiContent text={msg.content} streaming={loading && isLastMsg} />
+                {!(loading && isLastMsg) && msg.content && <AiActions content={msg.content} variant="insight" />}
               </motion.div>
             );
           })}
@@ -440,7 +445,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-            placeholder="继续追问，如：今年适合换工作吗？"
+            placeholder={t('insight_placeholder', lang)}
             disabled={loading}
             className="flex-1 rounded-lg px-3 py-2 text-[11px] focus:outline-none transition-colors"
             style={{
@@ -459,7 +464,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
               color: 'var(--t-gold)',
             }}
           >
-            {loading ? '…' : '追问'}
+            {loading ? '…' : t('insight_ask', lang)}
           </button>
         </div>
       </div>

@@ -6,6 +6,7 @@
 import Link from 'next/link';
 import { ALL_STARS, ALL_TOPICS, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
+import NavigationBar from '@/components/NavigationBar';
 
 export const metadata = {
   title: '紫微斗数知识库 · 14 主星 × 13 宫位 · 倪海厦正宗体系',
@@ -18,22 +19,10 @@ export default function KnowledgeHomePage() {
 
   return (
     <div style={{ background: 'var(--bg-page)', minHeight: '100vh' }}>
-      {/* 顶栏 */}
-      <div className="px-6 py-4 flex items-center justify-between"
-        style={{ borderBottom: '1px solid rgba(184,146,42,0.15)', background: 'var(--bg-page)' }}>
-        <Link href="/" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.3em', textDecoration: 'none' }}>
-          ← 首页
-        </Link>
-        <div style={{ fontSize: '12px', color: 'var(--tx-3)', letterSpacing: '0.2em' }}>
-          倪师方法论 · 知识库
-        </div>
-        <Link href="/library" style={{ fontSize: '12px', color: 'var(--ac)', letterSpacing: '0.2em', textDecoration: 'none' }}>
-          古籍 →
-        </Link>
-      </div>
+      <NavigationBar />
 
       {/* Hero */}
-      <div className="text-center px-6 py-14">
+      <div className="text-center px-6 pt-20 pb-14">
         <div className="flex items-center justify-center gap-3 mb-4">
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
           <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>

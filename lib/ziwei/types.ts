@@ -5,9 +5,11 @@ export interface BirthInfo {
   hour: number;      // 时辰 branch index (0=子, 1=丑, ... 11=亥)
   gender: 'male' | 'female';
   name?: string;
-  province?: string;   // 出生省份
+  country?: string;    // 出生国家（默认中国，国外出生时填写）
+  province?: string;   // 出生省份（国内）
   city?: string;       // 出生城市
   longitude?: number;  // 出生地经度（用于真太阳时校正）
+  timezoneOffset?: number; // UTC偏移分钟数（如中国=480，美国东部=-300），用于国外出生时区校正
   /**
    * 原始输入（用户在表单里实际填的时间），已知出生时间时始终保留。
    * 例：用户输入 5/9 23:55 → year/month/day 会被改成 5/10（次日子时），

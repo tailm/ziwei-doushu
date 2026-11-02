@@ -39,9 +39,11 @@ function formAt(clockHour: string): BirthFormState {
     clockHour,
     clockMinute: '30',
     unknownTime: false,
+    country: '中国',
     province: '',
     city: '',
     longitude: 120,
+    timezoneOffset: 480,
     gender: 'male',
   };
 }

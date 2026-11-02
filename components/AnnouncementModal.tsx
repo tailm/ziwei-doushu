@@ -117,12 +117,12 @@ export default function AnnouncementModal() {
               textAlign: 'center',
             }}>
               <div style={{ fontSize: '10px', letterSpacing: '0.3em', color: '#c45a2d', marginBottom: '4px', fontWeight: 600 }}>
-                LIMITED TIME · 限时回馈
+                NEW USER · 新用户福利
               </div>
               <div style={{ fontSize: '14px', color: '#8b3a1a', fontWeight: 600, lineHeight: 1.6 }}>
-                <span style={{ fontSize: '16px', color: '#c45a2d', fontWeight: 700 }}>5 月 1 日 — 5 月 8 日</span>
+                <span style={{ fontSize: '16px', color: '#c45a2d', fontWeight: 700 }}>注册即赠 50 积分</span>
                 <br />
-                平台全部功能 + AI 提问 全部免费开放
+                起盘 · 合盘 · AI 解盘 · AI 问答
               </div>
             </div>
 

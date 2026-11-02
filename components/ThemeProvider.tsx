@@ -8,22 +8,19 @@ const ThemeContext = createContext<{
   toggle: () => void;
 }>({ theme: 'dark', toggle: () => {} });
 
-function getInitialTheme(): Theme {
-  if (typeof document !== 'undefined') {
-    const attr = document.documentElement.getAttribute('data-theme');
-    if (attr === 'light' || attr === 'dark') return attr;
-  }
-  return 'dark';
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const saved = localStorage.getItem('ziwei-theme') as Theme | null;
-    if (saved === 'light' || saved === 'dark') setTheme(saved);
+    if (saved === 'light' || saved === 'dark') {
+      setTheme(saved);
+      document.documentElement.setAttribute('data-theme', saved);
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    setMounted(true);
   }, []);
 
   useEffect(() => {

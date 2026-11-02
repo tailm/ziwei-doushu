@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ScrollIntro from '@/components/ScrollIntro';
+import NavigationBar from '@/components/NavigationBar';
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export default function PreviewPage() {
 
   return (
     <>
+      <NavigationBar />
       {/* 卷轴开场动画 */}
       <ScrollIntro key={replayKey} onComplete={() => setDone(true)} />
 

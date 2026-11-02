@@ -6,50 +6,84 @@ import InsightPanel from '@/components/InsightPanel';
 import TimeNav, { type TimeView } from '@/components/TimeNav';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, ZiweiChart, Palace } from '@/lib/ziwei/types';
+import { useAuth } from '@/lib/auth/AuthContext';
+import { useLang } from '@/lib/i18n/LanguageContext';
+import { t } from '@/lib/i18n/translations';
+import NavigationBar from '@/components/NavigationBar';
 
-/**
- * 命盘页 —— 开源版「排盘引擎 Demo」
- *
- * 这是一个最小可运行示例：用本仓库的排盘引擎 generateChart() 配合基础 UI
- * 组件，渲染一张完整紫微命盘 + 基础解读，并支持本命 / 大限 / 流年切换。
- *
- * 说明：线上商业版的完整交互界面（重设计的新 UI、AI 流式解读、合盘、分享
- * 卡片等）不在开源范围内；但排盘内核——安星算法、四化、格局识别、古籍库——
- * 完全开放（见 lib/ziwei/*），可自由二次开发出你自己的界面。
- */
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
   const [view, setView] = useState<TimeView>('mingpan');
   const [liunianYear, setLiunianYear] = useState(() => new Date().getFullYear());
+  const [creditsError, setCreditsError] = useState<string | null>(null);
+  const { permissions, refreshPermissions } = useAuth();
+  const { lang } = useLang();
+
+  const handleChartGenerate = async (info: BirthInfo) => {
+    setCreditsError(null);
+    try {
+      const res = await fetch('/api/credits/deduct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ feature: 'chart' }),
+      });
+      if (res.status === 402) {
+        const data = await res.json();
+        setCreditsError(data.message || t('chart_insufficient', lang));
+        return;
+      }
+      if (!res.ok) {
+        setCreditsError(t('chart_failed', lang));
+        return;
+      }
+      refreshPermissions();
+    } catch {
+      // 未登录用户也允许起盘（前端排盘引擎不依赖API）
+    }
+    setChart(generateChart(info));
+  };
 
   // ── 未起盘：展示出生信息表单 ──
   if (!chart) {
     return (
-      <main style={{ maxWidth: 720, margin: '0 auto', padding: '48px 20px' }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>紫微斗数排盘</h1>
+      <>
+        <NavigationBar />
+        <main style={{ maxWidth: 720, margin: '0 auto', padding: '80px 20px 48px' }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>{t('chart_page_title', lang)}</h1>
         <p style={{ color: '#888', marginBottom: 32, fontSize: 14, lineHeight: 1.7 }}>
-          输入出生年月日时，开源排盘引擎即时生成命盘。
-          <br />
-          （本页为引擎 Demo，完整商业版界面不在开源范围；排盘内核完全开放。）
+          {t('chart_page_desc', lang)}
         </p>
-        <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} />
+        {permissions && permissions.credits !== undefined && (
+          <div style={{ marginBottom: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(184,146,42,0.08)', border: '1px solid rgba(184,146,42,0.2)', fontSize: 13, color: 'var(--ac)' }}>
+            {t('chart_credits_info', lang)}: {permissions.credits} · {t('chart_cost_20', lang)}
+          </div>
+        )}
+        {creditsError && (
+          <div style={{ marginBottom: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(168,50,40,0.08)', border: '1px solid rgba(168,50,40,0.2)', fontSize: 13, color: '#A83228' }}>
+            {creditsError}
+          </div>
+        )}
+        <BirthForm onSubmit={handleChartGenerate} />
       </main>
+      </>
     );
   }
 
   // ── 已起盘：命盘 + 解读 ──
   return (
-    <main style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 16px' }}>
+    <>
+      <NavigationBar />
+      <main style={{ maxWidth: 1280, margin: '0 auto', padding: '80px 16px 24px' }}>
       <button
         type="button"
-        onClick={() => { setChart(null); setSelectedPalace(null); }}
+        onClick={() => { setChart(null); setSelectedPalace(null); setCreditsError(null); }}
         style={{
           marginBottom: 16, padding: '6px 14px', cursor: 'pointer',
           border: '1px solid #ccc', borderRadius: 8, background: 'transparent',
         }}
       >
-        ← 重新起盘
+        {t('chart_rechart', lang)}
       </button>
 
       <TimeNav
@@ -71,5 +105,6 @@ export default function ChartPage() {
         <InsightPanel chart={chart} selectedPalace={selectedPalace} />
       </div>
     </main>
+    </>
   );
 }
