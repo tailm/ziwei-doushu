@@ -35,9 +35,7 @@ export default function AiActions({ content, variant = 'insight' }: AiActionsPro
         body: JSON.stringify({ feature: 'tip' }),
       });
       if (res.status === 402) {
-        const data = await res.json();
-        setTipStatus('error');
-        setTimeout(() => setTipStatus('idle'), 3000);
+        router.push('/recharge');
         return;
       }
       if (res.ok) {

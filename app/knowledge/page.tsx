@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ALL_STARS, ALL_TOPICS, getKnowledge, STAR_BRIEF_SEO, STAR_TO_SLUG } from '@/lib/seo/knowledge';
 import { TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 export const metadata = {
   title: '紫微斗数知识库 · 14 主星 × 13 宫位 · 倪海厦正宗体系',
@@ -27,7 +28,7 @@ export default function KnowledgeHomePage() {
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
           <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>KNOWLEDGE BASE</span>
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.4))' }} />
-        </div>
+    </div>
         <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em', marginBottom: '12px' }}>
           紫微斗数知识库
         </h1>
@@ -35,13 +36,13 @@ export default function KnowledgeHomePage() {
           14 主星 × 13 宫位 = <strong style={{ color: 'var(--ac)' }}>{ALL_STARS.length * ALL_TOPICS.length}</strong> 项专题<br />
           基于倪海厦《天纪》体系编纂 · 含古籍引证
         </p>
-      </div>
+    </div>
 
       {/* 14 主星卡片 */}
       <div className="max-w-5xl mx-auto px-6 pb-20">
         <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.3em', textAlign: 'center', marginBottom: '24px' }}>
           十四主星
-        </div>
+    </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {ALL_STARS.map(star => (
             <Link
@@ -61,10 +62,10 @@ export default function KnowledgeHomePage() {
             >
               <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--tx-0)', letterSpacing: '0.15em' }}>
                 {star}
-              </div>
+    </div>
             </Link>
           ))}
-        </div>
+    </div>
 
         {/* 详细列表（每个主星 + 简介 + 进入按钮） */}
         <div className="mt-14 space-y-4">
@@ -82,7 +83,7 @@ export default function KnowledgeHomePage() {
                 <span style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.15em' }}>
                   ZI WEI · 14 STARS
                 </span>
-              </div>
+    </div>
               <p style={{ fontSize: '12px', color: 'var(--tx-2)', lineHeight: 1.7, marginBottom: '12px' }}>
                 {STAR_DESCRIPTIONS_QUICK[star] || ''}
               </p>
@@ -108,11 +109,12 @@ export default function KnowledgeHomePage() {
                     </Link>
                   );
                 })}
-              </div>
-            </div>
+    </div>
+    </div>
           ))}
-        </div>
-      </div>
+    </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

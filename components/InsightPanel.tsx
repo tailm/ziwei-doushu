@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace } from '@/lib/ziwei/types';
 import type { TimeView } from './TimeNav';
 import AiActions from './AiActions';
+import InsufficientCredits from './InsufficientCredits';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
 
@@ -191,6 +192,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTopic, setActiveTopic] = useState<string>('overview');
+  const [creditsError, setCreditsError] = useState<string | null>(null);
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
   const loadingRef = useRef(false);
   const autoLoaded = useRef(false);
@@ -286,6 +288,11 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         body: JSON.stringify({ chart, messages: apiMessages, lang }),
       });
       if (res.status === 404) throw new Error('api-missing');
+      if (res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setCreditsError(data.message || (lang === 'en' ? 'Insufficient credits' : '积分不足'));
+        throw new Error('insufficient-credits');
+      }
       if (!res.ok) throw new Error('请求失败');
       if (!res.body) throw new Error('无响应流');
 
@@ -315,8 +322,12 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
         }
       }
     } catch (e) {
-      const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, { role: 'assistant', content: missing ? t('insight_err_no_api', lang) : t('insight_err_failed', lang) }]);
+      if (e instanceof Error && e.message === 'insufficient-credits') {
+        // 已通过 creditsError 状态处理，不再添加聊天消息
+      } else {
+        const missing = e instanceof Error && e.message === 'api-missing';
+        setMessages(prev => [...prev, { role: 'assistant', content: missing ? t('insight_err_no_api', lang) : t('insight_err_failed', lang) }]);
+      }
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -327,6 +338,7 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
     if (!text.trim() || loadingRef.current) return;
     loadingRef.current = true;
     setLoading(true);
+    setCreditsError(null);
 
     const userMsg: Message = { role: 'user', content: text, hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
@@ -385,6 +397,12 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className="text-4xl mb-3" style={{ color: 'var(--t-gold)', opacity: 0.1 }}>✦</div>
             <p className="text-[10px] animate-pulse" style={{ color: 'var(--t-faint)' }}>{t('insight_loading', lang)}</p>
+          </div>
+        )}
+
+        {creditsError && (
+          <div className="mb-3">
+            <InsufficientCredits message={creditsError} />
           </div>
         )}
 

@@ -4,10 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { useTheme } from '@/components/ThemeProvider';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 import { divine } from '@/lib/tongqian';
 import AiDivine from '@/components/AiDivine';
 import type { DivinationResult, LineType } from '@/lib/tongqian';
+import dynamic from 'next/dynamic';
+
+const CoinSvg = dynamic(() => import('@/components/DivinationDecorations').then(m => m.CoinSvg), { ssr: false });
+const TrigramSymbol = dynamic(() => import('@/components/DivinationDecorations').then(m => m.TrigramSymbol), { ssr: false });
+const YaoLine = dynamic(() => import('@/components/DivinationDecorations').then(m => m.YaoLine), { ssr: false });
+const TongqianPageDemo = dynamic(() => import('@/components/PageDemoAnimations').then(m => m.TongqianPageDemo), { ssr: false });
+import { QuestionSelector, buildPersonalContext, type QuestionTopic } from '@/components/PersonalParams';
 
 const FORTUNE_LEVEL_EN: Record<string, string> = {
   '大吉': 'Great Fortune',
@@ -16,13 +25,6 @@ const FORTUNE_LEVEL_EN: Record<string, string> = {
   '平': 'Neutral',
   '小凶': 'Minor Misfortune',
   '凶': 'Misfortune',
-};
-
-const LINE_SYMBOLS: Record<LineType, string> = {
-  'yang': '━━━━━━━',
-  'yin': '━━━ ━━━',
-  'old_yang': '━━━○━━━',
-  'old_yin': '━━━×━━━',
 };
 
 const LINE_LABELS_ZH: Record<LineType, string> = {
@@ -42,32 +44,43 @@ const LINE_LABELS_EN: Record<LineType, string> = {
 const POSITION_NAMES_ZH = ['初爻', '二爻', '三爻', '四爻', '五爻', '上爻'];
 const POSITION_NAMES_EN = ['Line 1', 'Line 2', 'Line 3', 'Line 4', 'Line 5', 'Line 6'];
 
+const TRIGRAM_SYMBOLS: Record<string, string> = {
+  '乾': '☰', '兑': '☱', '离': '☲', '震': '☳',
+  '巽': '☴', '坎': '☵', '艮': '☶', '坤': '☷',
+};
+
 export default function TongqianPage() {
   const { lang } = useLang();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { user } = useAuth();
 
   const [result, setResult] = useState<DivinationResult | null>(null);
   const [divining, setDivining] = useState(false);
   const [currentThrow, setCurrentThrow] = useState<number>(-1);
+  const [throwCoins, setThrowCoins] = useState<{ coins: boolean[]; lineType: LineType }[]>([]);
+  const [questionTopic, setQuestionTopic] = useState<QuestionTopic>('');
 
   const handleDivine = () => {
     setDivining(true);
     setResult(null);
     setCurrentThrow(-1);
+    setThrowCoins([]);
 
     let step = 0;
     const interval = setInterval(() => {
       step++;
       setCurrentThrow(step - 1);
+
       if (step >= 6) {
         clearInterval(interval);
         const r = divine();
         setResult(r);
         setDivining(false);
         setCurrentThrow(-1);
+        setThrowCoins(r.throws);
       }
-    }, 400);
+    }, 500);
   };
 
   const c = {
@@ -105,7 +118,7 @@ export default function TongqianPage() {
           <div className="text-center mb-10">
             <div className="text-[11px] tracking-[0.45em] mb-4" style={{ color: c.tagText }}>
               {lang === 'zh' ? '六爻占卜 · 铜钱起卦' : 'Six-Line Divination · Coin Oracle'}
-            </div>
+    </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4"
               style={{ color: c.goldSolid, letterSpacing: '0.05em' }}>
               {lang === 'zh' ? '铜钱起卦' : 'Coin Divination'}
@@ -115,10 +128,39 @@ export default function TongqianPage() {
                 ? '诚心默念所问之事，投掷三枚铜钱六次，得六爻卦象，以易经智慧解读吉凶。'
                 : 'Focus on your question, then toss three coins six times to form a hexagram. The I Ching reveals your fortune.'}
             </p>
-          </div>
+    </div>
 
-          <div className="text-center mb-8">
+          {/* 个性化参数：求什么 */}
+          <QuestionSelector
+            value={questionTopic}
+            onChange={setQuestionTopic}
+            goldSolid={c.goldSolid}
+            goldLine={c.goldLine}
+            cardBg={c.cardBg}
+            cardBorder={c.cardBorder}
+            textMuted={c.textMuted}
+            textFaint={c.textFaint}
+          />
 
+          {/* 未填写个人信息时提示 */}
+          {user && !user.gender && !user.birth_date && !user.current_city && (
+            <div className="text-[11px] mb-4 text-center" style={{ color: c.textFaint }}>
+              <a href="/profile" style={{ color: c.goldSolid, textDecoration: 'underline' }}>
+                {lang === 'zh' ? '点击填写个人信息，获取更精准的解读' : 'Click to fill in personal info for better insights'}
+              </a>
+    </div>
+          )}
+
+          {/* 三枚铜钱可视化 + 起卦按钮 */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="flex gap-4 mb-4">
+              {[0, 1, 2].map(i => (
+                <CoinSvg key={i} color={c.goldSolid} size={44}
+                  face={divining ? 'yang' : 'yang'}
+                  flipping={divining && currentThrow >= 0}
+                  delay={i * 0.1} />
+              ))}
+    </div>
             <motion.button
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               onClick={handleDivine}
@@ -133,7 +175,7 @@ export default function TongqianPage() {
                 ? (lang === 'zh' ? '投掷铜钱中…' : 'Tossing coins…')
                 : (lang === 'zh' ? '诚心起卦' : 'Cast Hexagram')}
             </motion.button>
-          </div>
+    </div>
 
           <AnimatePresence mode="wait">
             {divining && (
@@ -153,25 +195,35 @@ export default function TongqianPage() {
                           {lang === 'zh' ? POSITION_NAMES_ZH[i] : POSITION_NAMES_EN[i]}
                         </span>
                         {isCurrent && (
-                          <motion.div
-                            animate={{ rotate: [0, 360] }}
-                            transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
-                            className="text-2xl" style={{ color: c.goldSolid }}>
-                            ◯
-                          </motion.div>
+                          <div className="flex gap-2">
+                            {[0, 1, 2].map(ci => (
+                              <motion.div key={ci}
+                                animate={{ rotateY: [0, 360], y: [0, -10, 0] }}
+                                transition={{ repeat: Infinity, duration: 0.5, delay: ci * 0.08 }}>
+                                <CoinSvg color={c.goldSolid} size={28} face="yang" />
+                              </motion.div>
+                            ))}
+    </div>
                         )}
-                        {isDone && result && result.throws[i] && (
-                          <span className="text-lg font-mono" style={{ color: c.goldSolid }}>
-                            {LINE_SYMBOLS[result.throws[i].lineType]}
-                          </span>
+                        {isDone && throwCoins[i] && (
+                          <div className="flex gap-1">
+                            {throwCoins[i].coins.map((coin, ci) => (
+                              <CoinSvg key={ci} color={c.goldSolid} size={24}
+                                face={coin ? 'yang' : 'yin'} />
+                            ))}
+    </div>
                         )}
                         {!isCurrent && !isDone && (
-                          <span className="text-lg" style={{ color: c.textFaint }}>— — —</span>
+                          <div className="flex gap-1">
+                            {[0, 1, 2].map(ci => (
+                              <CoinSvg key={ci} color={c.goldSolid} size={24} face="yin" />
+                            ))}
+    </div>
                         )}
                       </motion.div>
                     );
                   })}
-                </div>
+    </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -182,49 +234,52 @@ export default function TongqianPage() {
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
                 className="space-y-4">
+
+                {/* 本卦主卡片 */}
                 <div className="rounded-2xl p-8 text-center"
                   style={{ background: c.cardBg, border: `1px solid ${fortuneColor(result.originalHexagram.fortuneLevel)}40`, boxShadow: c.cardShadow }}>
                   <div className="text-[11px] tracking-[0.3em] mb-2" style={{ color: c.tagText }}>
                     {lang === 'zh' ? `第 ${result.originalHexagram.number} 卦` : `Hexagram No. ${result.originalHexagram.number}`}
-                  </div>
-                  <div className="text-3xl font-bold mb-3" style={{ color: c.goldSolid }}>
-                    {result.originalHexagram.chineseName}卦
-                  </div>
+    </div>
+                  {/* 卦名 + 八卦符号 */}
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <TrigramSymbol trigram={TRIGRAM_SYMBOLS[result.originalHexagram.chineseName[0]] || '☰'}
+                      color={c.goldSolid} size={36} />
+                    <div className="text-3xl font-bold" style={{ color: c.goldSolid }}>
+                      {result.originalHexagram.chineseName}卦
+    </div>
+    </div>
                   <div className="text-lg font-semibold mb-4" style={{ color: fortuneColor(result.originalHexagram.fortuneLevel) }}>
                     {lang === 'zh' ? result.originalHexagram.fortuneLevel : FORTUNE_LEVEL_EN[result.originalHexagram.fortuneLevel]}
-                  </div>
-                  <div className="py-4 px-6 rounded-xl mb-4" style={{ background: c.starBg, border: `1px solid ${c.cardBorder}` }}>
+    </div>
+                  {/* 六爻SVG线条 */}
+                  <div className="py-4 px-6 rounded-xl mb-4 flex flex-col items-center gap-1.5"
+                    style={{ background: c.starBg, border: `1px solid ${c.cardBorder}` }}>
                     {result.originalHexagram.lines.slice().reverse().map((line, i) => {
                       const originalIndex = 5 - i;
                       const isChanging = result.originalHexagram.changingLines.includes(originalIndex);
+                      const isYang = line === 'yang' || line === 'old_yang';
                       return (
                         <motion.div key={i}
                           initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.1 + i * 0.08 }}
-                          className="flex items-center justify-center gap-3 py-1">
+                          className="flex items-center gap-3">
                           <span className="text-[10px] w-12 text-right" style={{ color: c.textFaint }}>
                             {lang === 'zh' ? POSITION_NAMES_ZH[originalIndex] : POSITION_NAMES_EN[originalIndex]}
                           </span>
-                          <span className="text-lg font-mono tracking-wider" style={{
-                            color: isChanging ? fortuneColor(result.originalHexagram.fortuneLevel) : c.textPrimary,
-                            fontWeight: isChanging ? 700 : 400,
-                          }}>
-                            {LINE_SYMBOLS[line]}
-                          </span>
-                          {isChanging && (
-                            <span className="text-[10px]" style={{ color: fortuneColor(result.originalHexagram.fortuneLevel) }}>
-                              {lang === 'zh' ? '变' : 'chg'}
-                            </span>
-                          )}
+                          <YaoLine isYang={isYang} isChanging={isChanging}
+                            color={c.textPrimary} changingColor={fortuneColor(result.originalHexagram.fortuneLevel)}
+                            width={180} />
                         </motion.div>
                       );
                     })}
-                  </div>
+    </div>
                   <p className="text-sm leading-relaxed" style={{ color: c.textSecond }}>
                     {result.originalHexagram.judgment}
                   </p>
-                </div>
+    </div>
 
+                {/* 变卦 */}
                 {result.changedHexagram && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
@@ -233,19 +288,24 @@ export default function TongqianPage() {
                     style={{ background: c.cardBg, border: `1px solid ${fortuneColor(result.changedHexagram.fortuneLevel)}40` }}>
                     <div className="text-[11px] tracking-[0.3em] mb-2" style={{ color: c.tagText }}>
                       {lang === 'zh' ? '变卦' : 'Changed Hexagram'}
-                    </div>
-                    <div className="text-2xl font-bold mb-2" style={{ color: c.goldSolid }}>
-                      {result.changedHexagram.chineseName}卦
-                    </div>
+    </div>
+                    <div className="flex items-center justify-center gap-3 mb-2">
+                      <TrigramSymbol trigram={TRIGRAM_SYMBOLS[result.changedHexagram.chineseName[0]] || '☰'}
+                        color={c.goldSolid} size={30} />
+                      <div className="text-2xl font-bold" style={{ color: c.goldSolid }}>
+                        {result.changedHexagram.chineseName}卦
+    </div>
+    </div>
                     <div className="text-sm font-semibold mb-3" style={{ color: fortuneColor(result.changedHexagram.fortuneLevel) }}>
                       {lang === 'zh' ? result.changedHexagram.fortuneLevel : FORTUNE_LEVEL_EN[result.changedHexagram.fortuneLevel]}
-                    </div>
+    </div>
                     <p className="text-sm leading-relaxed" style={{ color: c.textSecond }}>
                       {result.changedHexagram.judgment}
                     </p>
                   </motion.div>
                 )}
 
+                {/* 综合解读 */}
                 <div className="rounded-2xl p-6"
                   style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
                   <h3 className="text-sm font-semibold mb-3" style={{ color: c.goldSolid }}>
@@ -254,8 +314,9 @@ export default function TongqianPage() {
                   <p className="text-sm leading-relaxed mb-4" style={{ color: c.textSecond }}>
                     {result.interpretation}
                   </p>
-                </div>
+    </div>
 
+                {/* 行事指引 */}
                 <div className="rounded-2xl p-6"
                   style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
                   <h3 className="text-sm font-semibold mb-3" style={{ color: c.goldSolid }}>
@@ -263,17 +324,20 @@ export default function TongqianPage() {
                   </h3>
                   <div className="space-y-2">
                     {result.originalHexagram.advice.map((a, i) => (
-                      <div key={i} className="flex gap-3">
+                      <motion.div key={i}
+                        initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="flex gap-3">
                         <div className="flex-shrink-0 mt-2 w-1 h-1 rounded-full" style={{ background: c.goldSolid, opacity: 0.6 }} />
                         <p className="text-sm leading-relaxed" style={{ color: c.textMuted }}>{a}</p>
-                      </div>
+                      </motion.div>
                     ))}
-                  </div>
-                </div>
+    </div>
+    </div>
 
                 <AiDivine
                   tool="tongqian"
-                  context={`本卦: 第${result.originalHexagram.number}卦 ${result.originalHexagram.chineseName}卦\n运势: ${result.originalHexagram.fortuneLevel}\n卦辞: ${result.originalHexagram.judgment}\n变爻: ${result.originalHexagram.changingLines.length > 0 ? result.originalHexagram.changingLines.join(', ') : '无'}\n${result.changedHexagram ? `变卦: 第${result.changedHexagram.number}卦 ${result.changedHexagram.chineseName}卦\n变卦运势: ${result.changedHexagram.fortuneLevel}\n变卦卦辞: ${result.changedHexagram.judgment}` : ''}\n综合解读: ${result.interpretation}\n指引: ${result.originalHexagram.advice.join('; ')}`}
+                  context={`本卦: 第${result.originalHexagram.number}卦 ${result.originalHexagram.chineseName}卦\n运势: ${result.originalHexagram.fortuneLevel}\n卦辞: ${result.originalHexagram.judgment}\n变爻: ${result.originalHexagram.changingLines.length > 0 ? result.originalHexagram.changingLines.join(', ') : '无'}\n${result.changedHexagram ? `变卦: 第${result.changedHexagram.number}卦 ${result.changedHexagram.chineseName}卦\n变卦运势: ${result.changedHexagram.fortuneLevel}\n变卦卦辞: ${result.changedHexagram.judgment}` : ''}\n综合解读: ${result.interpretation}\n指引: ${result.originalHexagram.advice.join('; ')}${buildPersonalContext(user, questionTopic, lang) ? '\n' + buildPersonalContext(user, questionTopic, lang) : ''}`}
                   goldSolid={c.goldSolid}
                   goldLine={c.goldLine}
                   cardBg={c.cardBg}
@@ -284,6 +348,7 @@ export default function TongqianPage() {
                   isDark={isDark}
                 />
 
+                {/* 投掷记录 - 铜钱SVG */}
                 <div className="rounded-2xl p-4"
                   style={{ background: c.cardBg, border: `1px solid ${c.cardBorder}` }}>
                   <h3 className="text-xs font-semibold mb-3" style={{ color: c.goldSolid }}>
@@ -294,21 +359,20 @@ export default function TongqianPage() {
                       <div key={i} className="text-center">
                         <div className="text-[9px] mb-1" style={{ color: c.textFaint }}>
                           {lang === 'zh' ? POSITION_NAMES_ZH[i].replace('爻', '') : `L${i + 1}`}
-                        </div>
+    </div>
                         <div className="flex justify-center gap-0.5 mb-1">
                           {th.coins.map((coin, ci) => (
-                            <span key={ci} className="text-xs" style={{ color: coin ? c.goldSolid : c.textMuted }}>
-                              {coin ? '●' : '○'}
-                            </span>
+                            <CoinSvg key={ci} color={c.goldSolid} size={16}
+                              face={coin ? 'yang' : 'yin'} />
                           ))}
-                        </div>
+    </div>
                         <div className="text-[10px]" style={{ color: c.textMuted }}>
                           {lang === 'zh' ? LINE_LABELS_ZH[th.lineType] : LINE_LABELS_EN[th.lineType]}
-                        </div>
-                      </div>
+    </div>
+    </div>
                     ))}
-                  </div>
-                </div>
+    </div>
+    </div>
 
                 <div className="text-center pt-4">
                   <motion.button
@@ -318,20 +382,17 @@ export default function TongqianPage() {
                     style={{ border: `1px solid ${c.goldLine}`, color: c.goldSolid, background: 'transparent' }}>
                     {lang === 'zh' ? '再起一卦' : 'Cast Again'}
                   </motion.button>
-                </div>
+    </div>
               </motion.div>
             )}
           </AnimatePresence>
 
           {!result && !divining && (
-            <div className="text-center py-12">
-              <p className="text-sm" style={{ color: c.textFaint }}>
-                {lang === 'zh' ? '心诚则灵 · 静心默念所问之事' : 'Sincerity brings clarity · Focus on your question'}
-              </p>
-            </div>
+            <TongqianPageDemo c={c} lang={lang} />
           )}
         </motion.div>
-      </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

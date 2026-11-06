@@ -2,7 +2,8 @@
  * /library/search?q=xxx — 搜索结果页
  */
 
-import Link from 'next/link';
+import Link from "next/link";
+import StaticFooter from "@/components/StaticFooter";
 import { searchClassics, getParagraphById } from '@/lib/classics';
 
 export const metadata = {
@@ -116,6 +117,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <style>{`
         mark { background: rgba(184,146,42,0.3); color: #8b6a14; padding: 0 2px; border-radius: 2px; font-weight: 600; }
       `}</style>
+      <StaticFooter />
     </div>
   );
 }

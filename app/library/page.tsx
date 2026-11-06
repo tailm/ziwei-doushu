@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { ALL_BOOKS, TOTAL_PARAGRAPHS } from '@/lib/classics';
 import LibrarySearch from './LibrarySearch';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 export const metadata = {
   title: '周易风水抽签解字五行八卦',
@@ -25,17 +26,17 @@ export default function LibraryHomePage() {
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to right, transparent, rgba(184,146,42,0.4))' }} />
           <span style={{ fontSize: '11px', color: 'var(--ac)', letterSpacing: '0.4em' }}>NI HAI XIA · CURRICULUM</span>
           <div style={{ height: '1px', width: '48px', background: 'linear-gradient(to left, transparent, rgba(184,146,42,0.4))' }} />
-        </div>
+    </div>
         <p style={{ fontSize: '14px', color: 'var(--tx-2)', letterSpacing: '0.1em', maxWidth: '600px', margin: '0 auto', lineHeight: 1.7 }}>
           权威古籍全文检索<br />
           收录 <strong style={{ color: 'var(--ac)' }}>{ALL_BOOKS.length}</strong> 部古籍 · 共 <strong style={{ color: 'var(--ac)' }}>{TOTAL_PARAGRAPHS}</strong> 段精华
         </p>
-      </div>
+    </div>
 
       {/* 搜索 */}
       <div className="max-w-2xl mx-auto px-6 mb-12">
         <LibrarySearch />
-      </div>
+    </div>
 
       {/* 古籍列表 */}
       <div className="max-w-5xl mx-auto px-6 pb-20">
@@ -58,18 +59,18 @@ export default function LibraryHomePage() {
             >
               <div style={{ fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.2em', marginBottom: '6px' }}>
                 {book.dynasty} · {book.author.split(' ')[0]}
-              </div>
+    </div>
               <div style={{ fontSize: '20px', fontWeight: 600, color: 'var(--tx-0)', marginBottom: '10px', letterSpacing: '0.1em' }}>
                 《{book.title}》
-              </div>
+    </div>
               <div style={{ fontSize: '12px', color: 'var(--tx-2)', lineHeight: 1.7, marginBottom: '14px' }}>
                 {book.intro}
-              </div>
+    </div>
               <div style={{ display: 'flex', gap: '12px', fontSize: '11px', color: 'var(--tx-3)' }}>
                 <span>{book.chapters.length} 章节</span>
                 <span style={{ color: 'rgba(184,146,42,0.4)' }}>·</span>
                 <span>{book.chapters.reduce((s, c) => s + c.paragraphs.length, 0)} 段精华</span>
-              </div>
+    </div>
               <div style={{
                 display: 'inline-flex',
                 marginTop: '14px',
@@ -79,23 +80,24 @@ export default function LibraryHomePage() {
                 fontWeight: 500,
               }}>
                 进入查阅 →
-              </div>
+    </div>
             </Link>
           ))}
-        </div>
+    </div>
 
         {/* 底部说明 */}
         <div style={{ marginTop: '60px', padding: '24px', background: 'rgba(184,146,42,0.05)', borderRadius: '10px', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--ac-dim)', fontWeight: 600, letterSpacing: '0.15em', marginBottom: '8px' }}>
             关于本库
-          </div>
+    </div>
           <div style={{ fontSize: '12px', color: 'var(--tx-2)', lineHeight: 1.8, maxWidth: '600px', margin: '0 auto' }}>
             <br />
-            内容持续完善，未来将补全《紫微斗数全集》全本与倪海厦《天纪》引证目录。<br />
+            <br />
             如发现任何错误请联系我们。
-          </div>
-        </div>
-      </div>
+    </div>
+    </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

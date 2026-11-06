@@ -10,6 +10,8 @@ import { useAuth } from '@/lib/auth/AuthContext';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
+import InsufficientCredits from '@/components/InsufficientCredits';
 
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
@@ -57,12 +59,12 @@ export default function ChartPage() {
         {permissions && permissions.credits !== undefined && (
           <div style={{ marginBottom: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(184,146,42,0.08)', border: '1px solid rgba(184,146,42,0.2)', fontSize: 13, color: 'var(--ac)' }}>
             {t('chart_credits_info', lang)}: {permissions.credits} · {t('chart_cost_20', lang)}
-          </div>
+    </div>
         )}
         {creditsError && (
-          <div style={{ marginBottom: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(168,50,40,0.08)', border: '1px solid rgba(168,50,40,0.2)', fontSize: 13, color: '#A83228' }}>
-            {creditsError}
-          </div>
+          <div style={{ marginBottom: 16 }}>
+            <InsufficientCredits message={creditsError} />
+    </div>
         )}
         <BirthForm onSubmit={handleChartGenerate} />
       </main>
@@ -103,8 +105,9 @@ export default function ChartPage() {
       >
         <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
         <InsightPanel chart={chart} selectedPalace={selectedPalace} />
-      </div>
+    </div>
     </main>
+    <SiteFooter />
     </>
   );
 }

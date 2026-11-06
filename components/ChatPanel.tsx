@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart } from '@/lib/ziwei/types';
 import AiActions from './AiActions';
+import InsufficientCredits from './InsufficientCredits';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
 
@@ -29,6 +30,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [creditsError, setCreditsError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,6 +45,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
     setLoading(true);
+    setCreditsError(null);
 
     try {
       const res = await fetch('/api/interpret', {
@@ -52,6 +55,11 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
       });
 
       if (res.status === 404) throw new Error('api-missing');
+      if (res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setCreditsError(data.message || (lang === 'en' ? 'Insufficient credits' : '积分不足'));
+        throw new Error('insufficient-credits');
+      }
       if (!res.ok) throw new Error(lang === 'en' ? 'Request failed' : '请求失败');
       if (!res.body) throw new Error(lang === 'en' ? 'No response stream' : '无响应流');
 
@@ -84,8 +92,11 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
         }
       }
     } catch (e) {
-      const missing = e instanceof Error && e.message === 'api-missing';
-      setMessages(prev => [...prev, {
+      if (e instanceof Error && e.message === 'insufficient-credits') {
+        // 已通过 creditsError 状态处理
+      } else {
+        const missing = e instanceof Error && e.message === 'api-missing';
+        setMessages(prev => [...prev, {
         role: 'assistant',
         content: missing
           ? (lang === 'en'
@@ -93,6 +104,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
             : '开源版不含 AI 解读接口（/api/interpret），需要你自己实现后才能用，详见 README「快速开始」。排盘本身不需要任何 API Key。')
           : (lang === 'en' ? 'Interpretation failed. Please check API config or try again later.' : '解读失败，请检查API配置或稍后重试。'),
       }]);
+      }
     } finally {
       setLoading(false);
     }
@@ -116,6 +128,12 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
               {t('chat_empty_2', lang)}
             </p>
           </motion.div>
+        )}
+
+        {creditsError && (
+          <div className="mb-3">
+            <InsufficientCredits message={creditsError} />
+          </div>
         )}
 
         <AnimatePresence>

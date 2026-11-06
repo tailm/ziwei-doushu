@@ -5,8 +5,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { useTheme } from '@/components/ThemeProvider';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
+import { useAuth } from '@/lib/auth/AuthContext';
 import { FEATURE_CATEGORIES as HAND_CATEGORIES, interpretHand } from '@/lib/shouxiang/data';
 import type { HandFeatures, FeatureDetail, FortuneLevel } from '@/lib/shouxiang/types';
+import dynamic from 'next/dynamic';
+
+const PalmDiagram = dynamic(() => import('@/components/DivinationDecorations').then(m => m.PalmDiagram), { ssr: false });
+import { QuestionSelector, buildPersonalContext, type QuestionTopic } from '@/components/PersonalParams';
+import InsufficientCredits from '@/components/InsufficientCredits';
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 
@@ -23,7 +30,9 @@ export default function ShouxiangPage() {
   const { lang } = useLang();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
+  const { user } = useAuth();
   const [mode, setMode] = useState<'image' | 'text'>('text');
+  const [questionTopic, setQuestionTopic] = useState<QuestionTopic>('');
   const [image, setImage] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState('');
@@ -123,7 +132,7 @@ export default function ShouxiangPage() {
       const res = await fetch('/api/shouxiang-analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image, lang }),
+        body: JSON.stringify({ image, lang, personalContext: buildPersonalContext(user, questionTopic, lang) }),
         signal: abortRef.current.signal,
       });
 
@@ -233,7 +242,7 @@ export default function ShouxiangPage() {
               <span className="text-xs px-3 py-1 rounded-full" style={{ border: `1px solid ${c.goldLine}`, color: c.goldSolid }}>
                 {lang === 'zh' ? '手相分析' : 'Palm Reading'}
               </span>
-            </div>
+    </div>
             <h1 className="text-2xl font-bold mb-3" style={{ color: c.goldSolid }}>
               {lang === 'zh' ? 'AI手相解读' : 'AI Palm Reading'}
             </h1>
@@ -242,7 +251,28 @@ export default function ShouxiangPage() {
                 ? '上传手掌照片或选择手相特征，AI将根据传统手相学进行专业分析'
                 : 'Upload a palm photo or select palm features for professional AI palm reading analysis'}
             </p>
-          </div>
+    </div>
+
+          {/* 个性化参数：求什么 */}
+          <QuestionSelector
+            value={questionTopic}
+            onChange={setQuestionTopic}
+            goldSolid={c.goldSolid}
+            goldLine={c.goldLine}
+            cardBg={c.cardBg}
+            cardBorder={c.cardBorder}
+            textMuted={c.textMuted}
+            textFaint={c.textFaint}
+          />
+
+          {/* 未填写个人信息时提示 */}
+          {user && !user.gender && !user.birth_date && !user.current_city && (
+            <div className="text-[11px] mb-4 text-center" style={{ color: c.textFaint }}>
+              <a href="/profile" style={{ color: c.goldSolid, textDecoration: 'underline' }}>
+                {lang === 'zh' ? '点击填写个人信息，获取更精准的解读' : 'Click to fill in personal info for better insights'}
+              </a>
+    </div>
+          )}
 
           {/* 模式切换 */}
           <div className="flex justify-center gap-3 mb-8">
@@ -268,7 +298,7 @@ export default function ShouxiangPage() {
             >
               {lang === 'zh' ? '图片分析' : 'Image Analysis'}
             </button>
-          </div>
+    </div>
 
           {/* ═══════ 文字测验模式 ═══════ */}
           {mode === 'text' && (
@@ -282,41 +312,63 @@ export default function ShouxiangPage() {
               >
                 {!textResult && (
                   <>
-                    {/* 特征选择表单 */}
-                    <div className="space-y-5 mb-6">
-                      {HAND_CATEGORIES.map(cat => (
-                        <div key={cat.key} className="rounded-xl p-4" style={{ background: c.featureBg, border: `1px solid ${c.featureBord}` }}>
-                          <label className="text-xs tracking-wider mb-3 block" style={{ color: c.goldSolid }}>
-                            {lang === 'zh' ? cat.label : cat.labelEn}
-                          </label>
-                          <div className="flex flex-wrap gap-2">
-                            {cat.options.map(opt => {
-                              const isSelected = features[cat.key] === opt.value;
-                              return (
-                                <button
-                                  key={opt.value}
-                                  onClick={() => setFeatures(prev => ({ ...prev, [cat.key]: opt.value }))}
-                                  className="text-xs px-3 py-1.5 rounded-lg transition-all duration-200"
-                                  style={{
-                                    border: isSelected ? `1px solid ${c.goldSolid}` : `1px solid ${c.cardBorder}`,
-                                    background: isSelected ? c.tabActive : 'transparent',
-                                    color: isSelected ? c.goldSolid : c.textMuted,
-                                  }}
-                                >
-                                  {lang === 'zh' ? opt.label : opt.labelEn}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    {/* 手掌SVG示意图 + 特征选择表单 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-4 mb-6">
+                      {/* 手掌示意图 */}
+                      <div className="rounded-xl p-4 flex flex-col items-center justify-start"
+                        style={{ background: c.featureBg, border: `1px solid ${c.featureBord}` }}>
+                        <div className="text-[10px] mb-2" style={{ color: c.goldSolid }}>
+                          {lang === 'zh' ? '手掌示意图' : 'Palm Diagram'}
+    </div>
+                        <PalmDiagram
+                          color={c.goldSolid}
+                          size={140}
+                          highlightLines={Object.keys(features).filter(k => features[k as keyof HandFeatures]).map(k => {
+                            const map: Record<string, string> = {
+                              lifeLine: 'lifeLine', headLine: 'headLine',
+                              heartLine: 'heartLine', fateLine: 'fateLine',
+                            };
+                            return map[k] || k;
+                          })}
+                        />
+    </div>
+
+                      {/* 特征选择表单 */}
+                      <div className="space-y-3">
+                        {HAND_CATEGORIES.map(cat => (
+                          <div key={cat.key} className="rounded-xl p-3" style={{ background: c.featureBg, border: `1px solid ${c.featureBord}` }}>
+                            <label className="text-xs tracking-wider mb-2 block" style={{ color: c.goldSolid }}>
+                              {lang === 'zh' ? cat.label : cat.labelEn}
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                              {cat.options.map(opt => {
+                                const isSelected = features[cat.key] === opt.value;
+                                return (
+                                  <button
+                                    key={opt.value}
+                                    onClick={() => setFeatures(prev => ({ ...prev, [cat.key]: opt.value }))}
+                                    className="text-xs px-3 py-1.5 rounded-lg transition-all duration-200"
+                                    style={{
+                                      border: isSelected ? `1px solid ${c.goldSolid}` : `1px solid ${c.cardBorder}`,
+                                      background: isSelected ? c.tabActive : 'transparent',
+                                      color: isSelected ? c.goldSolid : c.textMuted,
+                                    }}
+                                  >
+                                    {lang === 'zh' ? opt.label : opt.labelEn}
+                                  </button>
+                                );
+                              })}
+    </div>
+    </div>
+                        ))}
+    </div>
+    </div>
 
                     {/* 错误提示 */}
                     {error && (
-                      <div className="rounded-xl p-4 mb-6 text-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                        <p className="text-sm" style={{ color: '#f87171' }}>{error}</p>
-                      </div>
+                      <div className="mb-6">
+                        <InsufficientCredits message={error} goldSolid={c.goldSolid} />
+    </div>
                     )}
 
                     {/* 提交按钮 */}
@@ -330,7 +382,7 @@ export default function ShouxiangPage() {
                       >
                         {lang === 'zh' ? '开始手相测验' : 'Start Palm Quiz'}
                       </motion.button>
-                    </div>
+    </div>
                   </>
                 )}
 
@@ -345,14 +397,14 @@ export default function ShouxiangPage() {
                     <div className="rounded-2xl p-6 text-center" style={{ background: c.cardBg, border: `1px solid ${FORTUNE_LEVEL_COLOR[textResult.overallFortune]}40` }}>
                       <div className="text-xs tracking-wider mb-2" style={{ color: c.textMuted }}>
                         {lang === 'zh' ? '总体手相运势' : 'Overall Palm Fortune'}
-                      </div>
+    </div>
                       <div className="text-3xl font-bold mb-2" style={{ color: FORTUNE_LEVEL_COLOR[textResult.overallFortune], fontFamily: 'serif' }}>
                         {textResult.overallFortune}
-                      </div>
+    </div>
                       <p className="text-sm leading-relaxed" style={{ color: c.textSecond }}>
                         {textResult.interpretation}
                       </p>
-                    </div>
+    </div>
 
                     {/* 各维度详情 */}
                     <div className="space-y-2">
@@ -368,23 +420,23 @@ export default function ShouxiangPage() {
                               <span className="text-xs px-2 py-0.5 rounded" style={{ background: `${FORTUNE_LEVEL_COLOR[d.fortuneLevel]}20`, color: FORTUNE_LEVEL_COLOR[d.fortuneLevel] }}>
                                 {d.fortuneLevel}
                               </span>
-                            </div>
+    </div>
                             <div className="text-xs mb-1" style={{ color: c.textMuted }}>
                               {lang === 'zh' ? d.label : d.labelEn}
-                            </div>
+    </div>
                             <p className="text-sm leading-relaxed" style={{ color: c.textSecond }}>
                               {lang === 'zh' ? d.description : d.descriptionEn}
                             </p>
-                          </div>
+    </div>
                         );
                       })}
-                    </div>
+    </div>
 
                     {/* 行事建议 */}
                     <div className="rounded-2xl p-5" style={{ background: c.cardBg, border: `1px solid ${c.goldLine}` }}>
                       <div className="text-xs tracking-wider mb-3" style={{ color: c.goldSolid }}>
                         {lang === 'zh' ? '行事建议' : 'Advice'}
-                      </div>
+    </div>
                       <ul className="space-y-2">
                         {textResult.advice.map((a, i) => (
                           <li key={i} className="text-sm flex items-start gap-2" style={{ color: c.textSecond }}>
@@ -393,7 +445,7 @@ export default function ShouxiangPage() {
                           </li>
                         ))}
                       </ul>
-                    </div>
+    </div>
 
                     {/* 重新测验按钮 */}
                     <div className="text-center">
@@ -404,7 +456,7 @@ export default function ShouxiangPage() {
                       >
                         {lang === 'zh' ? '重新测验' : 'Re-quiz'}
                       </button>
-                    </div>
+    </div>
                   </motion.div>
                 )}
               </motion.div>
@@ -425,10 +477,10 @@ export default function ShouxiangPage() {
                 <div className="rounded-xl p-3 mb-6 text-center" style={{ background: c.dropBg, border: `1px solid ${c.goldLine}` }}>
                   <p className="text-xs" style={{ color: c.textMuted }}>
                     {lang === 'zh'
-                      ? '🔒 图片仅用于AI分析，不会保存或存储，分析完成后即丢弃'
-                      : '🔒 Images are used only for AI analysis, never stored. Discarded after analysis.'}
+                      ? '图片仅用于AI分析，不会保存或存储，分析完成后即丢弃'
+                      : 'Images are used only for AI analysis, never stored. Discarded after analysis.'}
                   </p>
-                </div>
+    </div>
 
                 {/* 图片上传区域 */}
                 {!image && (
@@ -443,7 +495,16 @@ export default function ShouxiangPage() {
                       border: `2px dashed ${dragOver ? c.goldSolid : c.cardBorder}`,
                     }}
                   >
-                    <div className="text-4xl mb-4">🖐️</div>
+                    <div className="mb-4 flex justify-center">
+                      <svg width="48" height="48" viewBox="0 0 48 48" style={{ opacity: 0.7 }}>
+                        <path d="M16 42 L16 22 Q16 14 22 12 L26 12 Q32 14 32 22 L32 42"
+                          fill="none" stroke={c.goldSolid} strokeWidth="1.5" />
+                        <path d="M16 22 Q12 20 10 14 Q8 8 12 6 Q16 5 16 14"
+                          fill="none" stroke={c.goldSolid} strokeWidth="1" opacity="0.5" />
+                        <path d="M22 12 Q20 4 24 1 Q28 0 29 6 Q29 10 26 12"
+                          fill="none" stroke={c.goldSolid} strokeWidth="0.8" opacity="0.4" />
+                      </svg>
+    </div>
                     <p className="text-sm font-medium mb-2" style={{ color: c.goldSolid }}>
                       {lang === 'zh' ? '点击或拖拽上传手掌照片' : 'Click or drag to upload a palm photo'}
                     </p>
@@ -460,7 +521,7 @@ export default function ShouxiangPage() {
                         if (file) handleFile(file);
                       }}
                     />
-                  </div>
+    </div>
                 )}
 
                 {/* 图片预览 */}
@@ -477,15 +538,15 @@ export default function ShouxiangPage() {
                           {lang === 'zh' ? '重新上传' : 'Re-upload'}
                         </button>
                       )}
-                    </div>
-                  </div>
+    </div>
+    </div>
                 )}
 
                 {/* 错误提示 */}
                 {error && (
-                  <div className="rounded-xl p-4 mb-6 text-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                    <p className="text-sm" style={{ color: '#f87171' }}>{error}</p>
-                  </div>
+                  <div className="mb-6">
+                    <InsufficientCredits message={error} goldSolid={c.goldSolid} />
+    </div>
                 )}
 
                 {/* 分析按钮 */}
@@ -517,7 +578,7 @@ export default function ShouxiangPage() {
                         {lang === 'zh' ? '停止' : 'Stop'}
                       </button>
                     )}
-                  </div>
+    </div>
                 )}
 
                 {/* 分析结果 */}
@@ -533,7 +594,7 @@ export default function ShouxiangPage() {
                       <div className="rounded-2xl p-6" style={{ background: c.cardBg, border: `1px solid ${c.goldLine}` }}>
                         <div className="flex items-center justify-between mb-4">
                           <h3 className="text-sm font-semibold flex items-center gap-2" style={{ color: c.goldSolid }}>
-                            <span>✨</span>
+
                             {lang === 'zh' ? 'AI手相分析结果' : 'AI Palm Analysis Result'}
                           </h3>
                           {!analyzing && (
@@ -545,7 +606,7 @@ export default function ShouxiangPage() {
                               {lang === 'zh' ? '重新分析' : 'Re-analyze'}
                             </button>
                           )}
-                        </div>
+    </div>
 
                         {analyzing && !result && (
                           <div className="flex items-center gap-2 py-4">
@@ -559,7 +620,7 @@ export default function ShouxiangPage() {
                             <span className="text-sm" style={{ color: c.textMuted }}>
                               {lang === 'zh' ? 'AI正在分析手相中…' : 'AI is analyzing your palm…'}
                             </span>
-                          </div>
+    </div>
                         )}
 
                         <div className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: c.textSecond }}>
@@ -567,8 +628,8 @@ export default function ShouxiangPage() {
                           {analyzing && (
                             <span className="inline-block w-2 h-4 ml-0.5 animate-pulse" style={{ background: c.goldSolid }} />
                           )}
-                        </div>
-                      </div>
+    </div>
+    </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -576,7 +637,8 @@ export default function ShouxiangPage() {
             </AnimatePresence>
           )}
         </motion.div>
-      </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

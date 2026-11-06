@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 interface AdminUser {
   id: number;
@@ -88,7 +89,7 @@ export default function AdminPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-sm" style={{ color: 'var(--tx-3)' }}>加载中...</div>
-      </div>
+    </div>
     );
   }
 
@@ -165,26 +166,26 @@ export default function AdminPage() {
       <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--tx-1)' }}>管理后台</h1>
       <div className="text-xs mb-6" style={{ color: 'var(--tx-3)' }}>
         管理员: {user.wallet_address.slice(0, 10)}...
-      </div>
+    </div>
 
       <div className="grid grid-cols-4 gap-3 mb-6">
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
           <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总用户</div>
           <div className="text-lg font-bold" style={{ color: 'var(--tx-1)' }}>{stats.total}</div>
-        </div>
+    </div>
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
           <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>会员</div>
           <div className="text-lg font-bold" style={{ color: 'var(--gold-solid)' }}>{stats.premium}</div>
-        </div>
+    </div>
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
           <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总余额</div>
           <div className="text-lg font-bold" style={{ color: 'var(--gold-solid)' }}>{stats.totalBalance.toFixed(1)}U</div>
-        </div>
+    </div>
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
           <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>待确认充值</div>
           <div className="text-lg font-bold" style={{ color: stats.pendingRecharges > 0 ? 'var(--gold-solid)' : 'var(--tx-1)' }}>{stats.pendingRecharges}</div>
-        </div>
-      </div>
+    </div>
+    </div>
 
       <div className="flex gap-2 mb-4">
         <button
@@ -209,7 +210,7 @@ export default function AdminPage() {
         >
           充值记录
         </button>
-      </div>
+    </div>
 
       {tab === 'users' && (
         <div className="rounded-xl p-4" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
@@ -273,12 +274,12 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
-          </div>
+    </div>
 
           {filteredUsers.length === 0 && (
             <div className="text-center py-8 text-xs" style={{ color: 'var(--tx-3)' }}>暂无用户数据</div>
           )}
-        </div>
+    </div>
       )}
 
       {tab === 'recharge' && (
@@ -287,16 +288,16 @@ export default function AdminPage() {
             <div className="text-center p-2 rounded-lg" style={{ background: 'var(--bg-2)' }}>
               <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>已确认</div>
               <div className="text-sm font-bold" style={{ color: 'var(--gold-solid)' }}>{stats.confirmedRecharges}</div>
-            </div>
+    </div>
             <div className="text-center p-2 rounded-lg" style={{ background: 'var(--bg-2)' }}>
               <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>待确认</div>
               <div className="text-sm font-bold" style={{ color: 'var(--tx-1)' }}>{stats.pendingRecharges}</div>
-            </div>
+    </div>
             <div className="text-center p-2 rounded-lg" style={{ background: 'var(--bg-2)' }}>
               <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总充值额</div>
               <div className="text-sm font-bold" style={{ color: 'var(--gold-solid)' }}>{stats.totalRechargeAmount.toFixed(1)}U</div>
-            </div>
-          </div>
+    </div>
+    </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -344,12 +345,12 @@ export default function AdminPage() {
                 })}
               </tbody>
             </table>
-          </div>
+    </div>
 
           {records.length === 0 && (
             <div className="text-center py-8 text-xs" style={{ color: 'var(--tx-3)' }}>暂无充值记录</div>
           )}
-        </div>
+    </div>
       )}
 
       {editingUser && (
@@ -386,8 +387,8 @@ export default function AdminPage() {
                 >
                   ★ 会员
                 </button>
-              </div>
-            </div>
+    </div>
+    </div>
 
             {editTier === 'premium' && (
               <div className="mb-4">
@@ -399,7 +400,7 @@ export default function AdminPage() {
                   className="w-full px-3 py-2 rounded-lg text-xs outline-none"
                   style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', color: 'var(--tx-1)' }}
                 />
-              </div>
+    </div>
             )}
 
             <div className="mb-4">
@@ -413,7 +414,7 @@ export default function AdminPage() {
                 className="w-full px-3 py-2 rounded-lg text-xs outline-none"
                 style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', color: 'var(--tx-1)' }}
               />
-            </div>
+    </div>
 
             <div className="flex gap-3">
               <button
@@ -431,16 +432,17 @@ export default function AdminPage() {
               >
                 取消
               </button>
-            </div>
+    </div>
 
             {msg && (
               <div className="mt-3 text-xs" style={{ color: msg.includes('已更新') ? 'var(--gold-solid)' : 'var(--tx-2)' }}>
                 {msg}
-              </div>
+    </div>
             )}
-          </div>
-        </div>
+    </div>
+    </div>
       )}
+      <SiteFooter />
     </div>
   );
 }

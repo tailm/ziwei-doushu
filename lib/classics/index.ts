@@ -20,12 +20,25 @@ import { daoDeJing } from './data/daodejing';
 import { zhuangZi } from './data/zhuangzi';
 import { lieZi } from './data/liezi';
 import { huaiNanZi } from './data/huainanzi';
+import { liaoFanSiXun } from './data/liaofansixun';
+import { xinJing } from './data/xinjing';
+import { jinGangJing } from './data/jingangjing';
+import { faHuaJing } from './data/fahuajing';
+import { lengYanJing } from './data/lengyanjing';
+import { huaYanJing } from './data/huayanjing';
+import { lunYu } from './data/lunyu';
+import { daXue } from './data/daxue';
+import { zhongYong } from './data/zhongyong';
+import { mengZi } from './data/mengzi';
+import { chuanXiLu } from './data/chuanxilu';
+import { yiJing } from './data/yijing';
 
 /** 所有已收录古籍 */
 export const ALL_BOOKS: Book[] = [
   guSuiFu,
   ziWeiQuanJi,
   ziWeiQuanShu,
+  yiJing,
   zhouYi,
   baGua,
   heTuLuoShu,
@@ -37,6 +50,17 @@ export const ALL_BOOKS: Book[] = [
   zhuangZi,
   lieZi,
   huaiNanZi,
+  liaoFanSiXun,
+  xinJing,
+  jinGangJing,
+  faHuaJing,
+  lengYanJing,
+  huaYanJing,
+  lunYu,
+  daXue,
+  zhongYong,
+  mengZi,
+  chuanXiLu,
 ];
 
 /** 总段落数（用于首页统计） */

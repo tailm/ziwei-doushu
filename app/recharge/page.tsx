@@ -7,6 +7,7 @@ import { getAddress } from 'viem';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t, T } from '@/lib/i18n/translations';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 interface ChainInfo {
   id: string;
@@ -153,7 +154,7 @@ export default function RechargePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-sm" style={{ color: 'var(--tx-3)' }}>{t('recharge_loading', lang)}</div>
-      </div>
+    </div>
     );
   }
 
@@ -316,7 +317,7 @@ export default function RechargePage() {
           }}
         >
           {toast.msg}
-        </div>
+    </div>
       )}
       <h1 className="text-2xl font-bold mb-8" style={{ color: 'var(--tx-1)' }}>{t('recharge_title', lang)}</h1>
 
@@ -324,13 +325,13 @@ export default function RechargePage() {
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm font-medium" style={{ color: 'var(--tx-1)' }}>
             {isPremium ? t('recharge_premium', lang) : user.balance > 0 ? t('recharge_paid', lang) : t('recharge_user', lang)}
-          </div>
+    </div>
           <div className="text-xs" style={{ color: 'var(--tx-3)' }}>
             {user.nickname || `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`}
-          </div>
-        </div>
+    </div>
+    </div>
 
-      </div>
+    </div>
 
       {!isPremium && (
         <div className="rounded-xl p-6 mb-6" style={{ background: 'var(--bg-1)', border: '1px solid var(--gold-line)' }}>
@@ -342,7 +343,7 @@ export default function RechargePage() {
               <li>• {t('recharge_benefit_2', lang)}</li>
               <li>• {t('recharge_benefit_3', lang)}</li>
             </ul>
-          </div>
+    </div>
 
           <div className="mb-4">
             <label className="text-xs mb-2 block" style={{ color: 'var(--tx-3)' }}>{t('recharge_select_chain', lang)}</label>
@@ -370,8 +371,8 @@ export default function RechargePage() {
                   {chainName(chain)}
                 </button>
               ))}
-            </div>
-          </div>
+    </div>
+    </div>
 
           <div className="mb-4">
             <label className="text-xs mb-2 block" style={{ color: 'var(--tx-3)' }}>{t('recharge_select_token', lang)}</label>
@@ -399,8 +400,8 @@ export default function RechargePage() {
                   {token}
                 </button>
               ))}
-            </div>
-          </div>
+    </div>
+    </div>
 
           <div className="mb-4">
             <label className="text-xs mb-1 block" style={{ color: 'var(--tx-3)' }}>{t('recharge_amount', lang)} ({selectedToken})</label>
@@ -414,7 +415,7 @@ export default function RechargePage() {
               className="w-full px-4 py-2.5 rounded-lg text-sm outline-none"
               style={{ background: 'var(--bg-2)', border: '1px solid var(--bdr)', color: 'var(--tx-1)' }}
             />
-          </div>
+    </div>
 
           {currentChainInfo && (
             <div className="mb-4 p-3 rounded-lg space-y-2" style={{ background: 'var(--bg-2)' }}>
@@ -426,10 +427,10 @@ export default function RechargePage() {
                   {CHAIN_ICONS[selectedChain]}
                 </span>
                 <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>{t('recharge_receiving_addr', lang)} ({chainName(currentChainInfo)})</span>
-              </div>
+    </div>
               <div className="text-xs font-mono break-all" style={{ color: 'var(--tx-2)' }}>
                 {currentChainInfo.receiving_address}
-              </div>
+    </div>
               <div className="flex items-center gap-2 mt-2">
                 <span
                   className="inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold"
@@ -438,11 +439,11 @@ export default function RechargePage() {
                   {TOKEN_ICONS[selectedToken]}
                 </span>
                 <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>{selectedToken} {t('recharge_contract_addr', lang)}</span>
-              </div>
+    </div>
               <div className="text-xs font-mono break-all" style={{ color: 'var(--tx-2)' }}>
                 {currentChainInfo.token_contracts[selectedToken]}
-              </div>
-            </div>
+    </div>
+    </div>
           )}
 
           <button
@@ -462,9 +463,9 @@ export default function RechargePage() {
           {rechargeMsg && (
             <div className="mt-3 text-xs" style={{ color: rechargeMsg.includes(t('recharge_tx_success', lang)) ? 'var(--gold-solid)' : 'var(--tx-2)' }}>
               {rechargeMsg}
-            </div>
+    </div>
           )}
-        </div>
+    </div>
       )}
 
       {rechargeHistory.length > 0 && (
@@ -494,11 +495,11 @@ export default function RechargePage() {
                       </span>
                       {T[`chain_${item.chain}` as keyof typeof T]?.[lang] ?? item.chain}
                     </span>
-                  </div>
+    </div>
                   <div className="text-[10px] font-mono" style={{ color: 'var(--tx-3)' }}>
                     {item.tx_hash.slice(0, 18)}...
-                  </div>
-                </div>
+    </div>
+    </div>
                 <div className="flex items-center gap-2">
                   <span
                     className="text-[10px] px-2 py-1 rounded"
@@ -519,11 +520,11 @@ export default function RechargePage() {
                       {verifying === item.tx_hash ? t('recharge_verifying', lang) : t('recharge_verify', lang)}
                     </button>
                   )}
-                </div>
-              </div>
+    </div>
+    </div>
             ))}
-          </div>
-        </div>
+    </div>
+    </div>
       )}
 
       {creditsLog.length > 0 && (
@@ -545,7 +546,7 @@ export default function RechargePage() {
                   <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
                     {new Date(item.created_at * 1000).toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </span>
-                </div>
+    </div>
                 <div className="flex items-center gap-3">
                   <span
                     className="text-sm font-medium"
@@ -556,12 +557,13 @@ export default function RechargePage() {
                   <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
                     {t('recharge_balance', lang)} {item.balance_after}
                   </span>
-                </div>
-              </div>
+    </div>
+    </div>
             ))}
-          </div>
-        </div>
+    </div>
+    </div>
       )}
+      <SiteFooter />
     </div>
   );
 }

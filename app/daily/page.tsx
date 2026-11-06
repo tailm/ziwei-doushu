@@ -5,6 +5,8 @@ import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
 import { useTheme } from '@/components/ThemeProvider';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
+import { useAuth } from '@/lib/auth/AuthContext';
 
 import {
   calculateDailyFortune, calculateGenericDailyFortune,
@@ -18,6 +20,7 @@ import { calculateBaziData } from '@/lib/bazi';
 import { FortuneRadar } from '@/components/visualization/charts/FortuneRadar';
 import { FortuneTrendChart } from '@/components/visualization/charts/FortuneTrendChart';
 import AiDivine from '@/components/AiDivine';
+import { buildPersonalContext } from '@/components/PersonalParams';
 import type { FortuneRadarData } from '@/lib/visualization/chart-types';
 import type { FortuneTrendDataPoint } from '@/components/visualization/charts/FortuneTrendChart';
 
@@ -55,11 +58,12 @@ export default function DailyPage() {
   const { lang } = useLang();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
-
+  const { user } = useAuth();
 
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showBirthForm, setShowBirthForm] = useState(false);
   const [baziResult, setBaziResult] = useState<BaziOutput | null>(null);
+
   const [form, setForm] = useState({
     year: '',
     month: '',
@@ -245,8 +249,8 @@ export default function DailyPage() {
             <div className="text-base font-semibold">{formatDate(selectedDate)}</div>
             <div className="text-xs" style={{ color: c.textMuted }}>
               {almanac.weekday} · {almanac.lunarMonthDay}
-            </div>
-          </div>
+    </div>
+    </div>
           <div className="flex gap-2">
             {!isToday && (
               <button
@@ -264,8 +268,8 @@ export default function DailyPage() {
             >
               {t('daily_next_day', lang)}
             </button>
-          </div>
-        </div>
+    </div>
+    </div>
 
         {/* 个性化/通用标识 */}
         <div className="flex items-center justify-between">
@@ -284,7 +288,7 @@ export default function DailyPage() {
                 {baziResult.dayMaster}{lang === 'en' ? ' Day Master' : '日主'}
               </span>
             )}
-          </div>
+    </div>
           {isPersonalized ? (
             <button
               onClick={handleResetBazi}
@@ -302,7 +306,7 @@ export default function DailyPage() {
               {t('daily_set_birth', lang)}
             </button>
           )}
-        </div>
+    </div>
 
         {/* 出生信息表单弹窗 */}
         {showBirthForm && (
@@ -322,7 +326,7 @@ export default function DailyPage() {
                     style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
                     placeholder="1990"
                   />
-                </div>
+    </div>
                 <div>
                   <label className="text-xs" style={{ color: c.textMuted }}>{t('form_month', lang)}</label>
                   <input
@@ -333,7 +337,7 @@ export default function DailyPage() {
                     style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
                     placeholder="1-12"
                   />
-                </div>
+    </div>
                 <div>
                   <label className="text-xs" style={{ color: c.textMuted }}>{t('form_day', lang)}</label>
                   <input
@@ -344,8 +348,8 @@ export default function DailyPage() {
                     style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}
                     placeholder="1-31"
                   />
-                </div>
-              </div>
+    </div>
+    </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs" style={{ color: c.textMuted }}>{t('form_hour', lang)}</label>
@@ -358,7 +362,7 @@ export default function DailyPage() {
                   >
                     {Array.from({ length: 24 }, (_, i) => <option key={i} value={i}>{i}</option>)}
                   </select>
-                </div>
+    </div>
                 <div>
                   <label className="text-xs" style={{ color: c.textMuted }}>{t('form_minute', lang)}</label>
                   <select
@@ -370,8 +374,8 @@ export default function DailyPage() {
                   >
                     {[0, 15, 30, 45].map(m => <option key={m} value={m}>{m}</option>)}
                   </select>
-                </div>
-              </div>
+    </div>
+    </div>
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -382,7 +386,7 @@ export default function DailyPage() {
                 <label htmlFor="unknownTime" className="text-xs" style={{ color: c.textMuted }}>
                   {t('form_unknown_time', lang)}
                 </label>
-              </div>
+    </div>
               <div className="flex gap-2">
                 <button
                   onClick={() => { setShowBirthForm(false); setError(null); }}
@@ -398,9 +402,9 @@ export default function DailyPage() {
                 >
                   {lang === 'zh' ? '确定' : 'Confirm'}
                 </button>
-              </div>
-            </div>
-          </div>
+    </div>
+    </div>
+    </div>
         )}
 
         {/* 主要内容：左侧黄历 + 右侧运势 */}
@@ -413,21 +417,21 @@ export default function DailyPage() {
                 <span style={{ color: c.goldSolid }}>◆</span>
                 {t('daily_almanac', lang)}
               </h2>
-            </div>
+    </div>
             <div className="p-4 space-y-3 text-sm">
               {/* 农历 & 生肖 */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_lunar_date', lang)}</div>
                   <div className="font-medium">{almanac.lunarDate}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_shengxiao', lang)}</div>
                   <div className="font-medium">
                     {almanac.shengXiao.year} · {almanac.shengXiao.month} · {almanac.shengXiao.day}
-                  </div>
-                </div>
-              </div>
+    </div>
+    </div>
+    </div>
 
               {/* 干支 & 纳音 */}
               <div className="grid grid-cols-2 gap-3">
@@ -435,15 +439,15 @@ export default function DailyPage() {
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_ganzhi', lang)}</div>
                   <div className="font-medium">
                     {almanac.ganZhi.year} / {almanac.ganZhi.month} / {almanac.ganZhi.day}
-                  </div>
-                </div>
+    </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_nayin', lang)}</div>
                   <div className="font-medium">
                     {almanac.naYin.year} · {almanac.naYin.month} · {almanac.naYin.day}
-                  </div>
-                </div>
-              </div>
+    </div>
+    </div>
+    </div>
 
               {/* 节气 */}
               <div>
@@ -452,8 +456,8 @@ export default function DailyPage() {
                   {almanac.jieQi.current ? `${almanac.jieQi.current.name} (${almanac.jieQi.current.date})` : '-'}
                   {' → '}
                   {almanac.jieQi.next ? `${almanac.jieQi.next.name} (${almanac.jieQi.next.date})` : '-'}
-                </div>
-              </div>
+    </div>
+    </div>
 
               {/* 宜忌 */}
               <div className="grid grid-cols-2 gap-3">
@@ -461,15 +465,15 @@ export default function DailyPage() {
                   <div className="text-xs font-semibold" style={{ color: c.success }}>{t('daily_yi', lang)}</div>
                   <div className="text-xs leading-relaxed" style={{ color: c.text }}>
                     {almanac.yi.length > 0 ? almanac.yi.join(' · ') : '-'}
-                  </div>
-                </div>
+    </div>
+    </div>
                 <div>
                   <div className="text-xs font-semibold" style={{ color: c.danger }}>{t('daily_ji', lang)}</div>
                   <div className="text-xs leading-relaxed" style={{ color: c.text }}>
                     {almanac.ji.length > 0 ? almanac.ji.join(' · ') : '-'}
-                  </div>
-                </div>
-              </div>
+    </div>
+    </div>
+    </div>
 
               {/* 吉神凶煞 */}
               <div className="grid grid-cols-2 gap-3">
@@ -477,15 +481,15 @@ export default function DailyPage() {
                   <div className="text-xs font-semibold" style={{ color: c.success }}>{t('daily_jishen', lang)}</div>
                   <div className="text-xs leading-relaxed" style={{ color: c.text }}>
                     {almanac.jiShen.length > 0 ? almanac.jiShen.slice(0, 6).join(' · ') : '-'}
-                  </div>
-                </div>
+    </div>
+    </div>
                 <div>
                   <div className="text-xs font-semibold" style={{ color: c.danger }}>{t('daily_xiongsha', lang)}</div>
                   <div className="text-xs leading-relaxed" style={{ color: c.text }}>
                     {almanac.xiongSha.length > 0 ? almanac.xiongSha.slice(0, 6).join(' · ') : '-'}
-                  </div>
-                </div>
-              </div>
+    </div>
+    </div>
+    </div>
 
               {/* 冲煞 & 空亡 */}
               <div className="grid grid-cols-3 gap-3">
@@ -493,44 +497,44 @@ export default function DailyPage() {
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_chongsha', lang)}</div>
                   <div className="text-xs font-medium">{almanac.chongSha.chong}</div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{almanac.chongSha.sha}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_kongwang', lang)}</div>
                   <div className="text-xs font-medium">{almanac.kongWang}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_zhishen', lang)}</div>
                   <div className="text-xs font-medium" style={{ color: isBlack ? c.danger : c.success }}>
                     {zhiShenDesc}
-                  </div>
-                </div>
-              </div>
+    </div>
+    </div>
+    </div>
 
               {/* 胎神 */}
               <div>
                 <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_taishen', lang)}</div>
                 <div className="text-xs font-medium">{almanac.taiShen}</div>
-              </div>
+    </div>
 
               {/* 神位 */}
               <div className="grid grid-cols-4 gap-2">
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_cai_shen', lang)}</div>
                   <div className="text-xs font-medium">{almanac.shenWei.caiShen}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_xi_shen', lang)}</div>
                   <div className="text-xs font-medium">{almanac.shenWei.xiShen}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_fu_shen', lang)}</div>
                   <div className="text-xs font-medium">{almanac.shenWei.fuShen}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_yang_gui', lang)}</div>
                   <div className="text-xs font-medium">{almanac.shenWei.yangGuiShen}</div>
-                </div>
-              </div>
+    </div>
+    </div>
 
               {/* 二十八宿 & 月相 & 六曜 & 九星 & 物候 */}
               <div className="grid grid-cols-2 gap-3 pt-2" style={{ borderTop: `1px solid ${c.border}` }}>
@@ -538,30 +542,40 @@ export default function DailyPage() {
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_xiu', lang)}</div>
                   <div className="text-xs font-medium">
                     {almanac.xiu.name} · {almanac.xiu.gong} · {almanac.xiu.luck}
-                  </div>
-                </div>
+    </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_yuexiang', lang)}</div>
                   <div className="text-xs font-medium">{almanac.yueXiang}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_liuyao', lang)}</div>
                   <div className="text-xs font-medium">{almanac.liuYao}</div>
-                </div>
+    </div>
                 <div>
                   <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_jiuxing', lang)}</div>
                   <div className="text-xs font-medium">{almanac.jiuXing}</div>
-                </div>
-              </div>
+    </div>
+    </div>
               <div>
                 <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_wuhou', lang)}</div>
                 <div className="text-xs font-medium">{almanac.wuHou}</div>
-              </div>
-            </div>
-          </div>
+    </div>
+    </div>
+    </div>
 
           {/* 右侧：运势分析 */}
           <div className="space-y-6">
+
+            {/* 未填写个人信息时提示 */}
+            {user && !user.gender && !user.birth_date && !user.birth_city && (
+              <div className="text-[11px] text-center" style={{ color: isDark ? 'rgba(240,246,255,0.56)' : '#9da4b3' }}>
+                <a href="/profile" style={{ color: c.goldSolid, textDecoration: 'underline' }}>
+                  {lang === 'zh' ? '点击填写个人信息，获取更精准的解读' : 'Click to fill in personal info for better insights'}
+                </a>
+    </div>
+            )}
+
             {/* 7日趋势（仅个性化模式） */}
             {isPersonalized && trendData.length > 0 && (
               <div className="rounded-lg p-4" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
@@ -572,14 +586,14 @@ export default function DailyPage() {
                   defaultOverallOnly={true}
                   title={<span className="text-sm font-semibold">{t('daily_trend', lang)}</span>}
                 />
-              </div>
+    </div>
             )}
 
             {/* 运势雷达图 */}
             {radarData && (
               <div className="rounded-lg p-4" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
                 <FortuneRadar data={radarData} compact={false} />
-              </div>
+    </div>
             )}
 
             {/* 运势评分详情 */}
@@ -592,7 +606,7 @@ export default function DailyPage() {
                     {fortune.tenGod && ` · ${formatTenGod(fortune.tenGod)}`}
                   </span>
                 )}
-              </div>
+    </div>
 
               <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                 {scoreItems.map(item => {
@@ -613,7 +627,7 @@ export default function DailyPage() {
                         >
                           {formatLevel(level)}
                         </span>
-                      </div>
+    </div>
                       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: isDark ? '#1a2238' : '#eee' }}>
                         <div
                           className="h-full rounded-full transition-all duration-700"
@@ -622,11 +636,11 @@ export default function DailyPage() {
                             background: favorable ? c.success : neutral ? c.warning : c.danger,
                           }}
                         />
-                      </div>
-                    </div>
+    </div>
+    </div>
                   );
                 })}
-              </div>
+    </div>
 
               {/* 幸运信息 */}
               {isPersonalized && fortune.luckyColor && (
@@ -634,12 +648,12 @@ export default function DailyPage() {
                   <div>
                     <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_lucky_color', lang)}</div>
                     <div className="text-sm font-medium">{fortune.luckyColor}</div>
-                  </div>
+    </div>
                   <div>
                     <div className="text-xs" style={{ color: c.textMuted }}>{t('daily_lucky_direction', lang)}</div>
                     <div className="text-sm font-medium">{fortune.luckyDirection}</div>
-                  </div>
-                </div>
+    </div>
+    </div>
               )}
 
               {/* 运势指引 */}
@@ -658,13 +672,13 @@ export default function DailyPage() {
                     </li>
                   ))}
                 </ul>
-              </div>
+    </div>
 
               {/* AI深度解读 */}
               <div className="pt-3 mt-3" style={{ borderTop: `1px solid ${c.border}` }}>
                 <AiDivine
                   tool="daily"
-                  context={`日期: ${fortune.date}\n日干支: ${fortune.dayStem}${fortune.dayBranch}\n十神: ${fortune.tenGod}\n综合运势: ${fortune.overall}\n事业: ${fortune.career}\n感情: ${fortune.love}\n财运: ${fortune.wealth}\n健康: ${fortune.health}\n人际: ${fortune.social}\n幸运颜色: ${fortune.luckyColor || '未知'}\n幸运方位: ${fortune.luckyDirection || '未知'}\n建议: ${fortune.advice.join('; ')}`}
+                  context={`日期: ${fortune.date}\n日干支: ${fortune.dayStem}${fortune.dayBranch}\n十神: ${fortune.tenGod}\n综合运势: ${fortune.overall}\n事业: ${fortune.career}\n感情: ${fortune.love}\n财运: ${fortune.wealth}\n健康: ${fortune.health}\n人际: ${fortune.social}\n幸运颜色: ${fortune.luckyColor || '未知'}\n幸运方位: ${fortune.luckyDirection || '未知'}\n建议: ${fortune.advice.join('; ')}${buildPersonalContext(user, '', lang) ? '\n' + buildPersonalContext(user, '', lang) : ''}`}
                   goldSolid={c.goldSolid}
                   goldLine={c.goldLine}
                   cardBg={c.cardBg}
@@ -674,11 +688,12 @@ export default function DailyPage() {
                   textMuted={c.textMuted}
                   isDark={isDark}
                 />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

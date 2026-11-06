@@ -12,7 +12,8 @@
  *  - generateStaticParams 静态生成，零运行时开销
  */
 
-import Link from 'next/link';
+import Link from "next/link";
+import StaticFooter from "@/components/StaticFooter";
 import { notFound } from 'next/navigation';
 import type { TopicKey } from '@/lib/ziwei/db-analysis';
 import {
@@ -26,13 +27,10 @@ import {
 } from '@/lib/seo/knowledge';
 import { SITE_URL } from '@/lib/site';
 
-// 允许动态参数：如果某个 star/topic 组合不在 generateStaticParams 列表中
-// 也允许运行时按需渲染，避免中文 URL 编码问题导致 404
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
   const routes = getAllKnowledgeRoutes();
-  // URL 用拼音 slug 替代中文，避开 Vercel/CDN 中文路由边界问题
   return routes.map(r => ({ star: r.slug, topic: r.topic }));
 }
 
@@ -74,12 +72,9 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
   const data = getKnowledge(star, topic as TopicKey);
   if (!data.exists) notFound();
 
-  // 同主星其他 topic
   const otherTopicsForStar = ALL_TOPICS.filter(t => t !== topic && getKnowledge(star, t).exists);
-  // 同 topic 其他主星
   const otherStarsForTopic = ALL_STARS.filter(s => s !== star && getKnowledge(s, topic as TopicKey).exists);
 
-  // JSON-LD
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -274,11 +269,7 @@ export default async function KnowledgePage({ params }: { params: Promise<{ star
         </div>
       </article>
 
-      {/* 页脚 */}
-      <footer style={{ borderTop: '1px solid rgba(184,146,42,0.15)', padding: '20px 24px', textAlign: 'center', fontSize: '11px', color: 'var(--tx-3)', letterSpacing: '0.1em' }}>
-        <div style={{ marginBottom: '6px' }}>紫微研究 · 基于倪海厦正宗体系 · 仅供学习参考</div>
-        <div style={{ opacity: 0.85 }}>本平台不构成任何医疗、投资、法律或重大决策建议</div>
-      </footer>
+      <StaticFooter />
     </div>
   );
 }

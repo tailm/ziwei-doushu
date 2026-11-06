@@ -10,6 +10,8 @@ import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
 import AiActions from '@/components/AiActions';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
+import InsufficientCredits from '@/components/InsufficientCredits';
 
 // ─── AiContent 渲染器（与 InsightPanel 一致）────────────────
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
@@ -24,7 +26,7 @@ function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
               <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--ac)', letterSpacing: '0.04em' }}>
                 【{sectionMatch[1]}】
               </span>
-            </div>
+    </div>
           );
         }
         if (line.trim() === '') return <div key={i} style={{ height: '4px' }} />;
@@ -36,7 +38,7 @@ function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
                 ? part
                 : <strong key={j} style={{ fontWeight: 500, color: 'var(--tx-0)' }}>{part}</strong>
             )}
-          </div>
+    </div>
         );
       })}
       {streaming && (
@@ -69,6 +71,7 @@ export default function HemingPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [question, setQuestion] = useState('');
   const [analysisError, setAnalysisError] = useState(false);
+  const [creditsError, setCreditsError] = useState<string | null>(null);
   // 开源版不含 /api/heming：接口 404 时单独说明，而不是让用户反复重试
   const [apiMissing, setApiMissing] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -98,6 +101,7 @@ export default function HemingPage() {
     setAnalyzing(true);
     setAnalysis('');
     setAnalysisError(false);
+    setCreditsError(null);
 
     try {
       // 并行起两张盘（如果还没起）
@@ -123,6 +127,11 @@ export default function HemingPage() {
         body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined, lang }),
       });
       if (res.status === 404) { setApiMissing(true); throw new Error('api-missing'); }
+      if (res.status === 402) {
+        const data = await res.json().catch(() => ({}));
+        setCreditsError(data.message || t('heming_err_failed', lang));
+        throw new Error('insufficient-credits');
+      }
       if (!res.ok || !res.body) throw new Error();
 
       const reader = res.body.getReader();
@@ -181,7 +190,7 @@ export default function HemingPage() {
           <p style={{ fontSize: '13px', color: 'var(--tx-3)', lineHeight: 1.6 }}>
             {t('heming_desc', lang)}
           </p>
-        </div>
+    </div>
 
         {/* 双栏表单 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}
@@ -194,7 +203,7 @@ export default function HemingPage() {
               onSubmit={() => {}}
               onFormSave={setFormA}
             />
-          </div>
+    </div>
 
           {/* 乙方 */}
           <div style={cardStyle}>
@@ -204,8 +213,8 @@ export default function HemingPage() {
               onSubmit={() => {}}
               onFormSave={setFormB}
             />
-          </div>
-        </div>
+    </div>
+    </div>
 
         {/* ═══ 大合盘分析框（视觉中心，始终显示）════════════════ */}
         <div ref={analysisRef} style={{
@@ -220,7 +229,7 @@ export default function HemingPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: (analysis || analyzing) ? '20px' : '24px' }}>
             <span style={{ color: 'var(--ac)', opacity: 0.6 }}>◉</span>
             <span style={{ fontSize: '11px', letterSpacing: '0.3em', color: 'var(--tx-3)' }}>{t('heming_title', lang)} · HEMING</span>
-          </div>
+    </div>
 
           {/* 状态分支 */}
           {!analysis && !analyzing && (
@@ -228,7 +237,7 @@ export default function HemingPage() {
               <div style={{ fontSize: '13px', color: 'var(--tx-3)', marginBottom: '24px', lineHeight: 1.7 }}>
                 {t('heming_empty_1', lang)}<br />
                 {t('heming_empty_2', lang)}
-              </div>
+    </div>
               <button
                 onClick={() => runAnalysis()}
                 style={{
@@ -247,9 +256,9 @@ export default function HemingPage() {
               {formError && (
                 <div style={{ marginTop: '20px', fontSize: '13px', color: '#dc2626' }}>
                   {formError}
-                </div>
+    </div>
               )}
-            </div>
+    </div>
           )}
 
           {analyzing && !analysis && (
@@ -260,27 +269,33 @@ export default function HemingPage() {
                 borderRadius: '50%', animation: 'spin 0.8s linear infinite',
               }} />
               {t('heming_loading', lang)}
-            </div>
+    </div>
           )}
 
           {analysis && <AiContent text={analysis} streaming={analyzing} />}
           {analysis && !analyzing && <AiActions content={analysis} variant="heming" />}
+
+          {creditsError && (
+            <div style={{ marginTop: '12px' }}>
+              <InsufficientCredits message={creditsError} />
+    </div>
+          )}
 
           {analysisError && (
             <div style={{ padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--bdr)', background: 'var(--bg-card)', fontSize: '13px', color: 'var(--tx-2)', marginTop: '12px' }}>
               {apiMissing
                 ? t('heming_err_no_api', lang)
                 : t('heming_err_failed', lang)}
-            </div>
+    </div>
           )}
-        </div>
+    </div>
 
         {/* ═══ 针对合盘的追问聊天框（仅分析完成后显示）═══════════ */}
         {analysis && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
             <div style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--tx-3)', marginBottom: '4px' }}>
               {t('heming_followup', lang)}
-            </div>
+    </div>
 
             {/* 快捷问题 */}
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -310,7 +325,7 @@ export default function HemingPage() {
                   {q}
                 </button>
               ))}
-            </div>
+    </div>
 
             {/* 输入框 + 追问按钮 */}
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -338,16 +353,17 @@ export default function HemingPage() {
               >
                 {analyzing ? t('heming_analyzing', lang) : t('heming_followup_btn', lang)}
               </button>
-            </div>
-          </div>
+    </div>
+    </div>
         )}
-      </div>
+    </div>
 
       <style>{`
         @media (max-width: 680px) {
           .heming-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
+      <SiteFooter />
     </div>
   );
 }

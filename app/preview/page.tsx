@@ -2,8 +2,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import ScrollIntro from '@/components/ScrollIntro';
+import dynamic from 'next/dynamic';
+
+const ScrollIntro = dynamic(() => import('@/components/ScrollIntro'), { ssr: false });
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 export default function PreviewPage() {
   const router = useRouter();
@@ -31,7 +34,7 @@ export default function PreviewPage() {
         }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.4em', color: '#c89647', marginBottom: '16px' }}>
             SCROLL · INTRO · PREVIEW
-          </div>
+    </div>
           <h1 style={{
             fontSize: 'clamp(28px, 3.5vw, 40px)',
             letterSpacing: '0.18em',
@@ -84,7 +87,7 @@ export default function PreviewPage() {
             >
               进 入 原 版 首 页
             </button>
-          </div>
+    </div>
 
           <div style={{
             marginTop: '40px', fontSize: '12px', color: '#6e6048',
@@ -96,7 +99,7 @@ export default function PreviewPage() {
             <Link href="/chart" style={{ color: 'inherit', textDecoration: 'none' }}>命盘</Link>
             <span>·</span>
             <Link href="/heming" style={{ color: 'inherit', textDecoration: 'none' }}>合盘</Link>
-          </div>
+    </div>
 
           {/* 时间轴说明 */}
           <div style={{
@@ -118,10 +121,11 @@ export default function PreviewPage() {
             <div>· 3.5 ~ 4.2 s &nbsp;&nbsp;整体淡出，进入主页</div>
             <div style={{ marginTop: '12px', color: '#6e6048', fontSize: '11px' }}>
               用户随时可点右下「跳过」直接进入主页。
-            </div>
-          </div>
+    </div>
+    </div>
         </main>
       )}
+      <SiteFooter />
     </>
   );
 }

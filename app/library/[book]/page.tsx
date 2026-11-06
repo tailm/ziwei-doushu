@@ -2,7 +2,8 @@
  * /library/[book] — 单部古籍目录页
  */
 
-import Link from 'next/link';
+import Link from "next/link";
+import StaticFooter from "@/components/StaticFooter";
 import { notFound } from 'next/navigation';
 import { ALL_BOOKS, getBookBySlug } from '@/lib/classics';
 
@@ -96,6 +97,7 @@ export default async function BookPage({ params }: { params: Promise<{ book: str
           ))}
         </div>
       </div>
+      <StaticFooter />
     </div>
   );
 }

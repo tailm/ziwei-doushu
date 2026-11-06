@@ -102,12 +102,69 @@ function initSchema(database: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_recharge_user ON recharge_records(user_id);
     CREATE INDEX IF NOT EXISTS idx_recharge_status ON recharge_records(status);
     CREATE INDEX IF NOT EXISTS idx_credits_log_user ON credits_log(user_id);
+
+    CREATE TABLE IF NOT EXISTS prayer_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      type TEXT NOT NULL,
+      content TEXT NOT NULL,
+      target TEXT,
+      deity TEXT,
+      category TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_prayer_user ON prayer_records(user_id);
+    CREATE INDEX IF NOT EXISTS idx_prayer_type ON prayer_records(type);
+
+    CREATE TABLE IF NOT EXISTS recitation_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      session_type TEXT NOT NULL,
+      sutra_key TEXT NOT NULL,
+      sutra_name TEXT NOT NULL,
+      duration_minutes INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_recitation_user ON recitation_records(user_id);
+    CREATE INDEX IF NOT EXISTS idx_recitation_session ON recitation_records(session_type);
+    CREATE INDEX IF NOT EXISTS idx_recitation_date ON recitation_records(created_at);
+
+    CREATE TABLE IF NOT EXISTS wellness_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      practice_type TEXT NOT NULL,
+      sub_type TEXT,
+      duration_minutes INTEGER DEFAULT 0,
+      note TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_wellness_user ON wellness_records(user_id);
+    CREATE INDEX IF NOT EXISTS idx_wellness_type ON wellness_records(practice_type);
+    CREATE INDEX IF NOT EXISTS idx_wellness_date ON wellness_records(created_at);
   `);
 
   // 迁移：为已有数据库添加 credits 字段
   const userColumns = database.prepare("PRAGMA table_info(users)").all() as Array<{ name: string }>;
   if (!userColumns.some(c => c.name === 'credits')) {
     database.exec('ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 0');
+  }
+  if (!userColumns.some(c => c.name === 'gender')) {
+    database.exec('ALTER TABLE users ADD COLUMN gender TEXT');
+  }
+  if (!userColumns.some(c => c.name === 'birth_date')) {
+    database.exec('ALTER TABLE users ADD COLUMN birth_date TEXT');
+  }
+  if (!userColumns.some(c => c.name === 'birth_city')) {
+    database.exec('ALTER TABLE users ADD COLUMN birth_city TEXT');
+  }
+  if (!userColumns.some(c => c.name === 'current_city')) {
+    database.exec('ALTER TABLE users ADD COLUMN current_city TEXT');
   }
 }
 
@@ -116,6 +173,10 @@ export interface UserRow {
   wallet_address: string;
   nickname: string | null;
   avatar: string | null;
+  gender: string | null;
+  birth_date: string | null;
+  birth_city: string | null;
+  current_city: string | null;
   membership_tier: string;
   membership_expires_at: number | null;
   balance: number;
@@ -173,16 +234,17 @@ export const USDT_RECEIVING_ADDRESS = process.env.USDT_RECEIVING_ADDRESS || '0x0
 export const USDT_CONTRACT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 
 export const CREDITS_NEW_USER = 50;
-export const CREDITS_PER_USD = 100;
+export const CREDITS_PER_USD = 10;
 export const CREDITS_CHART = 20;
 export const CREDITS_HEMING = 50;
-export const CREDITS_AI_INTERPRET = 100;
+export const CREDITS_AI_INTERPRET = 10;
 export const CREDITS_AI_QA = 10;
 export const CREDITS_TIP = 10;
 export const CREDITS_DAILY = 10;
 export const CREDITS_CEZI = 10;
 export const CREDITS_CHOUQIAN = 10;
 export const CREDITS_TONGQIAN = 10;
+export const CREDITS_FENGSHUI = 10;
 
 export function createUser(walletAddress: string): UserRow {
   const db = getDb();
@@ -210,13 +272,17 @@ export function getUserById(id: number): UserRow | null {
   return stmt.get(id) as UserRow | null;
 }
 
-export function updateUser(id: number, fields: Partial<Pick<UserRow, 'nickname' | 'avatar' | 'membership_tier' | 'membership_expires_at' | 'balance' | 'credits'>>): UserRow | null {
+export function updateUser(id: number, fields: Partial<Pick<UserRow, 'nickname' | 'avatar' | 'gender' | 'birth_date' | 'birth_city' | 'current_city' | 'membership_tier' | 'membership_expires_at' | 'balance' | 'credits'>>): UserRow | null {
   const db = getDb();
   const sets: string[] = [];
   const values: (string | number | null)[] = [];
 
   if (fields.nickname !== undefined) { sets.push('nickname = ?'); values.push(fields.nickname); }
   if (fields.avatar !== undefined) { sets.push('avatar = ?'); values.push(fields.avatar); }
+  if (fields.gender !== undefined) { sets.push('gender = ?'); values.push(fields.gender); }
+  if (fields.birth_date !== undefined) { sets.push('birth_date = ?'); values.push(fields.birth_date); }
+  if (fields.birth_city !== undefined) { sets.push('birth_city = ?'); values.push(fields.birth_city); }
+  if (fields.current_city !== undefined) { sets.push('current_city = ?'); values.push(fields.current_city); }
   if (fields.membership_tier !== undefined) { sets.push('membership_tier = ?'); values.push(fields.membership_tier); }
   if (fields.membership_expires_at !== undefined) { sets.push('membership_expires_at = ?'); values.push(fields.membership_expires_at); }
   if (fields.balance !== undefined) { sets.push('balance = ?'); values.push(fields.balance); }
@@ -405,4 +471,167 @@ export function adjustUserBalance(userId: number, newBalance: number): UserRow |
 }
 export function adjustUserCredits(userId: number, newCredits: number): UserRow | null {
   return updateUser(userId, { credits: newCredits });
+}
+export interface PrayerRecordRow {
+  id: number;
+  user_id: number;
+  type: string;
+  content: string;
+  target: string | null;
+  deity: string | null;
+  category: string | null;
+  created_at: string;
+}
+
+export function createPrayerRecord(
+  userId: number,
+  type: string,
+  content: string,
+  target?: string,
+  deity?: string,
+  category?: string,
+): PrayerRecordRow {
+  const db = getDb();
+  db.prepare(
+    'INSERT INTO prayer_records (user_id, type, content, target, deity, category) VALUES (?, ?, ?, ?, ?, ?)',
+  ).run(userId, type, content, target ?? null, deity ?? null, category ?? null);
+  return db.prepare('SELECT * FROM prayer_records WHERE user_id = ? AND type = ? ORDER BY id DESC LIMIT 1').get(userId, type) as PrayerRecordRow;
+}
+
+export function getPrayerRecords(userId: number, type?: string): PrayerRecordRow[] {
+  const db = getDb();
+  if (type) {
+    return db.prepare('SELECT * FROM prayer_records WHERE user_id = ? AND type = ? ORDER BY created_at DESC').all(userId, type) as PrayerRecordRow[];
+  }
+  return db.prepare('SELECT * FROM prayer_records WHERE user_id = ? ORDER BY created_at DESC').all(userId) as PrayerRecordRow[];
+}
+export interface RecitationRecordRow {
+  id: number;
+  user_id: number;
+  session_type: string;
+  sutra_key: string;
+  sutra_name: string;
+  duration_minutes: number;
+  created_at: string;
+}
+
+export function createRecitationRecord(
+  userId: number,
+  sessionType: string,
+  sutraKey: string,
+  sutraName: string,
+  durationMinutes?: number,
+): RecitationRecordRow {
+  const db = getDb();
+  db.prepare(
+    'INSERT INTO recitation_records (user_id, session_type, sutra_key, sutra_name, duration_minutes) VALUES (?, ?, ?, ?, ?)',
+  ).run(userId, sessionType, sutraKey, sutraName, durationMinutes ?? 0);
+  return db.prepare('SELECT * FROM recitation_records WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(userId) as RecitationRecordRow;
+}
+
+export function getRecitationRecords(userId: number, sessionType?: string): RecitationRecordRow[] {
+  const db = getDb();
+  if (sessionType) {
+    return db.prepare('SELECT * FROM recitation_records WHERE user_id = ? AND session_type = ? ORDER BY created_at DESC').all(userId, sessionType) as RecitationRecordRow[];
+  }
+  return db.prepare('SELECT * FROM recitation_records WHERE user_id = ? ORDER BY created_at DESC').all(userId) as RecitationRecordRow[];
+}
+
+export function getRecitationStreak(userId: number): { current_streak: number; today_checked: { morning: boolean; evening: boolean } } {
+  const db = getDb();
+  const today = new Date().toISOString().slice(0, 10);
+  const todayRecords = db.prepare(
+    "SELECT session_type FROM recitation_records WHERE user_id = ? AND date(created_at) = ?",
+  ).all(userId, today) as Array<{ session_type: string }>;
+
+  const today_checked = {
+    morning: todayRecords.some(r => r.session_type === 'morning'),
+    evening: todayRecords.some(r => r.session_type === 'evening'),
+  };
+
+  const allRecords = db.prepare(
+    "SELECT DISTINCT date(created_at) as d FROM recitation_records WHERE user_id = ? ORDER BY d DESC",
+  ).all(userId) as Array<{ d: string }>;
+
+  let current_streak = 0;
+  if (allRecords.length > 0) {
+    const todayDate = new Date();
+    const checkDate = new Date(todayDate);
+    for (let i = 0; i < allRecords.length; i++) {
+      const recordDate = allRecords[i].d;
+      const expectedDate = checkDate.toISOString().slice(0, 10);
+      if (recordDate === expectedDate) {
+        current_streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else if (i === 0 && recordDate !== expectedDate) {
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return { current_streak, today_checked };
+}
+export interface WellnessRecordRow {
+  id: number;
+  user_id: number;
+  practice_type: string;
+  sub_type: string | null;
+  duration_minutes: number;
+  note: string | null;
+  created_at: string;
+}
+
+export function createWellnessRecord(
+  userId: number,
+  practiceType: string,
+  subType?: string,
+  durationMinutes?: number,
+  note?: string,
+): WellnessRecordRow {
+  const db = getDb();
+  db.prepare(
+    'INSERT INTO wellness_records (user_id, practice_type, sub_type, duration_minutes, note) VALUES (?, ?, ?, ?, ?)',
+  ).run(userId, practiceType, subType ?? null, durationMinutes ?? 0, note ?? null);
+  return db.prepare('SELECT * FROM wellness_records WHERE user_id = ? ORDER BY id DESC LIMIT 1').get(userId) as WellnessRecordRow;
+}
+
+export function getWellnessRecords(userId: number, practiceType?: string): WellnessRecordRow[] {
+  const db = getDb();
+  if (practiceType) {
+    return db.prepare('SELECT * FROM wellness_records WHERE user_id = ? AND practice_type = ? ORDER BY created_at DESC').all(userId, practiceType) as WellnessRecordRow[];
+  }
+  return db.prepare('SELECT * FROM wellness_records WHERE user_id = ? ORDER BY created_at DESC').all(userId) as WellnessRecordRow[];
+}
+
+export function getWellnessStreak(userId: number, practiceType: string): { current_streak: number; today_checked: boolean } {
+  const db = getDb();
+  const today = new Date().toISOString().slice(0, 10);
+  const todayRecord = db.prepare(
+    "SELECT id FROM wellness_records WHERE user_id = ? AND practice_type = ? AND date(created_at) = ?",
+  ).get(userId, practiceType, today);
+  const today_checked = !!todayRecord;
+
+  const allRecords = db.prepare(
+    "SELECT DISTINCT date(created_at) as d FROM wellness_records WHERE user_id = ? AND practice_type = ? ORDER BY d DESC",
+  ).all(userId, practiceType) as Array<{ d: string }>;
+
+  let current_streak = 0;
+  if (allRecords.length > 0) {
+    const checkDate = new Date();
+    for (let i = 0; i < allRecords.length; i++) {
+      const expectedDate = checkDate.toISOString().slice(0, 10);
+      if (allRecords[i].d === expectedDate) {
+        current_streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else if (i === 0 && allRecords[i].d !== expectedDate) {
+        break;
+      } else {
+        break;
+      }
+    }
+  }
+
+  return { current_streak, today_checked };
 }

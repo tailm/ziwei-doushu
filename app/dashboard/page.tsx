@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t, T } from '@/lib/i18n/translations';
 import NavigationBar from '@/components/NavigationBar';
+import SiteFooter from '@/components/SiteFooter';
 
 interface RechargeHistoryItem {
   id: number;
@@ -82,7 +83,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-pulse text-sm" style={{ color: 'var(--tx-3)' }}>{t('recharge_loading', lang)}</div>
-      </div>
+    </div>
     );
   }
 
@@ -101,11 +102,11 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="text-sm font-medium" style={{ color: 'var(--tx-1)' }}>
             {isPremium ? t('recharge_premium', lang) : t('credits_normal', lang)}
-          </div>
+    </div>
           <div className="text-xs" style={{ color: 'var(--tx-3)' }}>
             {user.nickname || `${user.wallet_address.slice(0, 6)}...${user.wallet_address.slice(-4)}`}
-          </div>
-        </div>
+    </div>
+    </div>
 
         {/* 积分余额 */}
         <div className="flex items-center justify-between p-4 rounded-lg mb-4" style={{ background: 'rgba(184,146,42,0.08)', border: '1px solid rgba(184,146,42,0.2)' }}>
@@ -113,28 +114,28 @@ export default function DashboardPage() {
           <span className="text-2xl font-bold" style={{ color: 'var(--ac)' }}>
             {isPremium ? t('credits_unlimited', lang) : credits}
           </span>
-        </div>
+    </div>
 
         {/* 功能消耗说明 */}
         <div className="grid grid-cols-4 gap-3">
           <div className="text-center p-3 rounded-lg" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[10px] mb-1" style={{ color: 'var(--tx-3)' }}>{t('credits_chart', lang)}</div>
             <div className="text-sm font-medium" style={{ color: 'var(--ac)' }}>{t('credits_20', lang)}</div>
-          </div>
+    </div>
           <div className="text-center p-3 rounded-lg" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[10px] mb-1" style={{ color: 'var(--tx-3)' }}>{t('credits_heming', lang)}</div>
             <div className="text-sm font-medium" style={{ color: 'var(--ac)' }}>{t('credits_50', lang)}</div>
-          </div>
+    </div>
           <div className="text-center p-3 rounded-lg" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[10px] mb-1" style={{ color: 'var(--tx-3)' }}>{t('credits_ai_interpret', lang)}</div>
             <div className="text-sm font-medium" style={{ color: 'var(--ac)' }}>{t('credits_100', lang)}</div>
-          </div>
+    </div>
           <div className="text-center p-3 rounded-lg" style={{ background: 'var(--bg-2)' }}>
             <div className="text-[10px] mb-1" style={{ color: 'var(--tx-3)' }}>{t('credits_ai_qa', lang)}</div>
             <div className="text-sm font-medium" style={{ color: 'var(--ac)' }}>{t('credits_10', lang)}</div>
-          </div>
-        </div>
-      </div>
+    </div>
+    </div>
+    </div>
 
       {/* 积分使用记录 */}
       {creditsLog.length > 0 && (
@@ -156,7 +157,7 @@ export default function DashboardPage() {
                   <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
                     {new Date(item.created_at * 1000).toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
                   </span>
-                </div>
+    </div>
                 <div className="flex items-center gap-3">
                   <span
                     className="text-sm font-medium"
@@ -167,11 +168,11 @@ export default function DashboardPage() {
                   <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
                     {t('recharge_balance', lang)} {item.balance_after}
                   </span>
-                </div>
-              </div>
+    </div>
+    </div>
             ))}
-          </div>
-        </div>
+    </div>
+    </div>
       )}
 
       {/* 充值入口 */}
@@ -184,7 +185,7 @@ export default function DashboardPage() {
               <li>• {t('recharge_benefit_2', lang)}</li>
               <li>• {t('recharge_benefit_3', lang)}</li>
             </ul>
-          </div>
+    </div>
           <button
             onClick={() => router.push('/recharge')}
             className="w-full px-6 py-3 rounded-lg text-sm transition-all duration-300"
@@ -192,7 +193,7 @@ export default function DashboardPage() {
           >
             {t('recharge_go', lang)}
           </button>
-        </div>
+    </div>
       )}
 
       {/* 充值记录 */}
@@ -208,11 +209,11 @@ export default function DashboardPage() {
                     <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-1)', color: 'var(--tx-3)' }}>
                       {T[`chain_${item.chain}` as keyof typeof T]?.[lang] ?? item.chain}
                     </span>
-                  </div>
+    </div>
                   <div className="text-[10px] font-mono" style={{ color: 'var(--tx-3)' }}>
                     {item.tx_hash.slice(0, 18)}...
-                  </div>
-                </div>
+    </div>
+    </div>
                 <span
                   className="text-[10px] px-2 py-1 rounded"
                   style={{
@@ -222,10 +223,10 @@ export default function DashboardPage() {
                 >
                   {item.status === 'confirmed' ? t('recharge_confirmed', lang) : t('recharge_pending', lang)}
                 </span>
-              </div>
+    </div>
             ))}
-          </div>
-        </div>
+    </div>
+    </div>
       )}
 
       {/* 功能说明 */}
@@ -235,17 +236,18 @@ export default function DashboardPage() {
           <div className="flex items-start gap-2">
             <span style={{ color: 'var(--ac)' }}>{t('credits_new_user', lang)}</span>
             <span>{t('credits_new_user_desc', lang)}</span>
-          </div>
+    </div>
           <div className="flex items-start gap-2">
             <span style={{ color: 'var(--ac)' }}>{t('credits_recharge', lang)}</span>
             <span>{t('credits_recharge_desc', lang)}</span>
-          </div>
+    </div>
           <div className="flex items-start gap-2">
             <span style={{ color: 'var(--ac)' }}>{t('credits_consume', lang)}</span>
             <span>{t('credits_consume_desc', lang)}</span>
-          </div>
-        </div>
-      </div>
+    </div>
+    </div>
+    </div>
+      <SiteFooter />
     </div>
   );
 }

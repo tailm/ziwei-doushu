@@ -7,6 +7,7 @@ export const runtime = 'nodejs';
 interface RequestBody {
   image: string;
   lang?: 'zh' | 'en';
+  personalContext?: string;
 }
 
 const SYSTEM_PROMPTS: Record<'zh' | 'en', string> = {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: RequestBody = await req.json();
     lang = body.lang || 'zh';
-    const { image } = body;
+    const { image, personalContext } = body;
 
     if (!image) {
       return new Response(JSON.stringify({ error: 'Missing image' }), {
@@ -135,8 +136,8 @@ export async function POST(req: NextRequest) {
       {
         type: 'text',
         text: lang === 'en'
-          ? 'Please analyze my palm from this photo using Chinese palm reading principles.'
-          : '请根据这张手掌照片进行手相分析。',
+          ? `Please analyze my palm from this photo using Chinese palm reading principles.${personalContext ? `\n\nPersonal context:\n${personalContext}` : ''}`
+          : `请根据这张手掌照片进行手相分析。${personalContext ? `\n\n个性化信息：\n${personalContext}` : ''}`,
       },
       {
         type: 'image_url',

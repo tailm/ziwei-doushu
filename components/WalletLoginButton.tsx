@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { t } from '@/lib/i18n/translations';
+import DailyCheckinProgress from './DailyCheckinProgress';
 
 export default function WalletLoginButton() {
   const { user, loading, logout } = useAuth();
@@ -68,8 +69,8 @@ export default function WalletLoginButton() {
               <div className="text-[10px] mt-0.5" style={{ color: 'var(--tx-3)' }}>
                 {shortAddress}
               </div>
-
             </div>
+            <DailyCheckinProgress />
             <Link
               href="/profile"
               className="block px-4 py-2 text-xs transition-colors hover:bg-[var(--bg-2)]"

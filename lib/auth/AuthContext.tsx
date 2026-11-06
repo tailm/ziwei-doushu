@@ -8,6 +8,10 @@ export interface UserInfo {
   wallet_address: string;
   nickname: string | null;
   avatar: string | null;
+  gender: string | null;
+  birth_date: string | null;
+  birth_city: string | null;
+  current_city: string | null;
   membership_tier: string;
   membership_expires_at: number | null;
   balance: number;

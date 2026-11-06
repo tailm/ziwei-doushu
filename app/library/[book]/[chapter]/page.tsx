@@ -2,7 +2,8 @@
  * /library/[book]/[chapter] — 单章节阅读页
  */
 
-import Link from 'next/link';
+import Link from "next/link";
+import StaticFooter from "@/components/StaticFooter";
 import { notFound } from 'next/navigation';
 import { ALL_BOOKS, getChapter } from '@/lib/classics';
 
@@ -173,6 +174,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ book: 
           ) : <div style={{ flex: 1 }} />}
         </div>
       </article>
+      <StaticFooter />
     </div>
   );
 }

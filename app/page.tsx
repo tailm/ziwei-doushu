@@ -9,8 +9,10 @@ import AnnouncementModal from '@/components/AnnouncementModal';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { t, type TKey } from '@/lib/i18n/translations';
-import { TaijiDiagram, StarConstellation, SpinningTaiji, FloatingStars, DiamondDivider } from '@/components/Decorations';
+import { TaijiDiagram, StarConstellation, SpinningTaiji, FloatingStars, DiamondDivider, CloudPattern } from '@/components/Decorations';
+import { LotusFlower, BuddhaHalo, AuspiciousCloud, DharmaWheel, Mandala, SeedSyllable, TempleSilhouette, IncenseSmoke, BodhiLeaf, SacredFlame } from '@/components/SacredDecorations';
 import NavigationBar from '@/components/NavigationBar';
+import ToolDemo from '@/components/ToolDemo';
 
 // ─── 滚动入场 wrapper ────────────────────────────────────
 function FadeIn({
@@ -85,222 +87,6 @@ function useColors(theme: Theme) {
   };
 }
 
-// ─── 命理工具视觉装饰 ────────────────────────────────────
-function ToolVisual({ index, colors: c, accent, lang }: {
-  index: number; colors: ReturnType<typeof useColors>; accent: string; icon: string; lang: 'zh' | 'en';
-}) {
-
-  if (index === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="48" height="48" viewBox="0 0 48 48" style={{ opacity: 0.9 }}>
-          <circle cx="24" cy="24" r="20" fill="none" stroke={accent} strokeWidth="1.5" />
-          <circle cx="24" cy="24" r="14" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.5" />
-          <path d="M24 4 A20 20 0 0 1 24 44 A10 10 0 0 1 24 24 A10 10 0 0 0 24 4 Z" fill={accent} opacity="0.15" />
-          <circle cx="24" cy="14" r="2.5" fill={accent} />
-          <circle cx="24" cy="34" r="2.5" fill="none" stroke={accent} strokeWidth="1" />
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[280px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="text-center mb-3">
-            <div className="text-2xl font-bold tracking-widest" style={{ color: accent, fontFamily: 'serif' }}>
-              {lang === 'zh' ? '甲子日' : 'Jia-Zi Day'}
-            </div>
-            <div className="text-[10px] mt-1" style={{ color: c.textMuted }}>
-              {lang === 'zh' ? '天干: 甲 · 地支: 子 · 五行: 木水' : 'Stem: Jia · Branch: Zi · Element: Wood-Water'}
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-2 mt-3">
-            {[
-              { label: lang === 'zh' ? '事业' : 'Career', level: 4 },
-              { label: lang === 'zh' ? '财运' : 'Wealth', level: 3 },
-              { label: lang === 'zh' ? '感情' : 'Love', level: 5 },
-            ].map((item, i) => (
-              <div key={i} className="text-center rounded-lg py-2" style={{ background: `${accent}10` }}>
-                <div className="text-[10px]" style={{ color: c.textMuted }}>{item.label}</div>
-                <div className="flex justify-center gap-0.5 mt-1">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <div key={j} className="w-1 h-1 rounded-full"
-                      style={{ background: j < item.level ? accent : `${accent}20` }} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (index === 1) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="56" height="56" viewBox="0 0 56 56" style={{ opacity: 0.9 }}>
-          <rect x="8" y="8" width="40" height="40" rx="4" fill="none" stroke={accent} strokeWidth="1.5" />
-          <rect x="12" y="12" width="32" height="32" rx="2" fill="none" stroke={accent} strokeWidth="0.5" opacity="0.4" />
-          <path d="M20 18 L20 38 M28 14 L28 42 M36 18 L36 38" stroke={accent} strokeWidth="1" opacity="0.3" />
-          <text x="28" y="34" fontSize="18" fill={accent} textAnchor="middle" fontFamily="serif" fontWeight="bold">命</text>
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[260px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="text-center mb-3">
-            <div className="text-4xl font-bold mb-2" style={{ color: accent, fontFamily: 'serif' }}>命</div>
-            <div className="text-[10px]" style={{ color: c.textMuted }}>
-              {lang === 'zh' ? '偏旁: 人 · 五行: 水 · 笔画: 8' : 'Radical: Person · Element: Water · Strokes: 8'}
-            </div>
-          </div>
-          <div className="border-t pt-3" style={{ borderColor: `${accent}20` }}>
-            <div className="text-[11px] leading-relaxed text-center" style={{ color: c.textSecond }}>
-              {lang === 'zh' ? '「命」字从口从令，口为言语，令为号令，合则为主宰之意。' : 'The character "Ming" combines mouth and command, meaning to govern.'}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (index === 2) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="56" height="56" viewBox="0 0 56 56" style={{ opacity: 0.9 }}>
-          <rect x="16" y="4" width="6" height="48" rx="2" fill="none" stroke={accent} strokeWidth="1.5" />
-          <rect x="26" y="8" width="6" height="44" rx="2" fill="none" stroke={accent} strokeWidth="1" opacity="0.6" />
-          <rect x="36" y="2" width="6" height="50" rx="2" fill="none" stroke={accent} strokeWidth="1.2" opacity="0.8" />
-          <rect x="16" y="4" width="6" height="8" rx="2" fill={accent} opacity="0.2" />
-          <rect x="36" y="2" width="6" height="6" rx="2" fill={accent} opacity="0.15" />
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[280px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="text-center mb-3">
-            <span className="text-xs px-3 py-1 rounded-full inline-block" style={{ background: `${accent}20`, color: accent }}>
-              {lang === 'zh' ? '第28签' : 'Sign #28'}
-            </span>
-          </div>
-          <div className="text-sm leading-relaxed text-center mb-3" style={{ color: c.textSecond, fontFamily: 'serif' }}>
-            {lang === 'zh' ? '日出扶桑万万里\n祥云瑞气满乾坤' : 'Sun rises from the east\nAuspicious clouds fill the sky'}
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <div className="h-px w-8" style={{ background: `${accent}40` }} />
-            <span className="text-[10px]" style={{ color: accent }}>{lang === 'zh' ? '上吉签' : 'Excellent Sign'}</span>
-            <div className="h-px w-8" style={{ background: `${accent}40` }} />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (index === 3) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="56" height="56" viewBox="0 0 56 56" style={{ opacity: 0.9 }}>
-          {[0, 1, 2].map(i => (
-            <g key={i} transform={`translate(${8 + i * 16} 8)`}>
-              <circle cx="8" cy="8" r="7" fill="none" stroke={accent} strokeWidth="1.5" />
-              <rect x="5" y="5" width="6" height="6" fill="none" stroke={accent} strokeWidth="0.8" />
-              <circle cx="8" cy="8" r="2" fill={accent} opacity="0.3" />
-            </g>
-          ))}
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[280px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {['初爻', '二爻', '三爻', '四爻', '五爻', '上爻'].map((yao, i) => (
-              <div key={i} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
-                style={{ border: `1px solid ${accent}25`, background: `${accent}06` }}>
-                <div className="flex gap-0.5">
-                  {[0, 1, 2].map(j => (
-                    <div key={j} className="w-2.5 h-0.5 rounded-sm"
-                      style={{ background: (i + j) % 2 === 0 ? accent : `${accent}30` }} />
-                  ))}
-                </div>
-                <span className="text-[10px]" style={{ color: c.textMuted }}>{yao}</span>
-              </div>
-            ))}
-          </div>
-          <div className="rounded-lg px-3 py-2 text-center" style={{ border: `1px solid ${accent}30`, background: `${accent}10` }}>
-            <span className="text-xs font-medium" style={{ color: accent }}>
-              {lang === 'zh' ? '天火同人卦' : 'Hexagram: Fellowship'}
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (index === 4) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="64" height="64" viewBox="0 0 64 64" style={{ opacity: 0.9 }}>
-          <ellipse cx="32" cy="36" rx="18" ry="24" fill="none" stroke={accent} strokeWidth="1.5" />
-          <ellipse cx="32" cy="20" rx="14" ry="10" fill="none" stroke={accent} strokeWidth="1" opacity="0.5" />
-          <circle cx="24" cy="28" r="2" fill={accent} opacity="0.4" />
-          <circle cx="40" cy="28" r="2" fill={accent} opacity="0.4" />
-          <path d="M26 40 Q32 44 38 40" fill="none" stroke={accent} strokeWidth="0.8" opacity="0.4" />
-          <line x1="32" y1="32" x2="32" y2="42" stroke={accent} strokeWidth="0.5" opacity="0.3" />
-          <line x1="20" y1="36" x2="44" y2="36" stroke={accent} strokeWidth="0.3" opacity="0.2" strokeDasharray="1 2" />
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[280px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="text-center mb-3">
-            <div className="text-xs font-medium mb-3" style={{ color: accent }}>
-              {lang === 'zh' ? 'AI面相分析' : 'AI Face Analysis'}
-            </div>
-          </div>
-          <div className="space-y-2">
-            {[
-              { label: lang === 'zh' ? '脸型' : 'Face Shape', value: lang === 'zh' ? '鹅蛋脸' : 'Oval' },
-              { label: lang === 'zh' ? '眼睛' : 'Eyes', value: lang === 'zh' ? '凤眼' : 'Phoenix' },
-              { label: lang === 'zh' ? '鼻子' : 'Nose', value: lang === 'zh' ? '挺直' : 'Straight' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between text-[11px] px-3 py-1.5 rounded-lg"
-                style={{ background: `${accent}08` }}>
-                <span style={{ color: c.textMuted }}>{item.label}</span>
-                <span style={{ color: accent }}>{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (index === 5) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-5 w-full">
-        <svg width="64" height="64" viewBox="0 0 64 64" style={{ opacity: 0.9 }}>
-          <path d="M20 60 L20 30 Q20 20 28 18 L36 18 Q44 20 44 30 L44 60"
-            fill="none" stroke={accent} strokeWidth="1.5" />
-          <path d="M20 30 Q14 28 12 22 Q10 16 14 14 Q18 12 20 18"
-            fill="none" stroke={accent} strokeWidth="1" opacity="0.6" />
-          <path d="M44 30 Q50 28 52 22 Q54 16 50 14 Q46 12 44 18"
-            fill="none" stroke={accent} strokeWidth="1" opacity="0.6" />
-          <path d="M28 18 Q26 8 30 4 Q34 2 36 6 Q38 10 36 18"
-            fill="none" stroke={accent} strokeWidth="1" opacity="0.5" />
-          <path d="M22 40 Q32 35 42 40" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.4" strokeDasharray="2 1" />
-          <path d="M24 48 Q32 44 40 48" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.4" strokeDasharray="2 1" />
-          <path d="M26 55 Q32 52 38 55" fill="none" stroke={accent} strokeWidth="0.6" opacity="0.4" strokeDasharray="2 1" />
-        </svg>
-        <div className="rounded-xl p-5 w-full max-w-[280px]" style={{ border: `1px solid ${accent}30`, background: `${accent}08` }}>
-          <div className="text-center mb-3">
-            <div className="text-xs font-medium mb-3" style={{ color: accent }}>
-              {lang === 'zh' ? 'AI手相分析' : 'AI Palm Analysis'}
-            </div>
-          </div>
-          <div className="space-y-2">
-            {[
-              { label: lang === 'zh' ? '生命线' : 'Life Line', value: lang === 'zh' ? '深长' : 'Deep & Long' },
-              { label: lang === 'zh' ? '智慧线' : 'Head Line', value: lang === 'zh' ? '清晰' : 'Clear' },
-              { label: lang === 'zh' ? '感情线' : 'Heart Line', value: lang === 'zh' ? '上扬' : 'Upturned' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between text-[11px] px-3 py-1.5 rounded-lg"
-                style={{ background: `${accent}08` }}>
-                <span style={{ color: c.textMuted }}>{item.label}</span>
-                <span style={{ color: accent }}>{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
-}
 
 // ─── 命理工具展示数据 ──────────────────────────────────
 const TOOLS = [
@@ -414,16 +200,107 @@ export default function HomePage() {
 
       <NavigationBar />
 
+      {/* ══ 哲学引言 ══════════════════════════════════════ */}
+      <section className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
+        <WeakBoundary line={c.navBorder} />
+        <div className="absolute inset-0"
+          style={{
+            background: theme === 'dark'
+              ? 'linear-gradient(to bottom, #020810 0%, #020810 6%, #030a18 22%, #0d0820 40%, #0a0618 68%, #030a18 86%, #020810 100%)'
+              : 'linear-gradient(to bottom, #f5efe0 0%, #f5efe0 6%, #c08055 18%, #6a2810 32%, #1e0a02 50%, #1e0a02 70%, #6a2810 84%, #f5efe0 100%)',
+            transition: 'background 0.4s ease',
+          }} />
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden">
+          <span className="font-bold" style={{ fontSize: 'clamp(220px, 38vw, 460px)', color: 'rgba(212,168,67,0.012)', lineHeight: 1, fontFamily: 'serif' }}>命</span>
+        </div>
+        {/* 佛光放射 */}
+        <div className="absolute pointer-events-none" style={{ top: '8%', left: '50%', transform: 'translateX(-50%)' }}>
+          <BuddhaHalo size={400} color={c.goldSolid} opacity={0.06} />
+        </div>
+        {/* 莲花装饰 */}
+        <div className="absolute pointer-events-none" style={{ bottom: '5%', left: '50%', transform: 'translateX(-50%)' }}>
+          <LotusFlower size={180} color={c.goldSolid} opacity={0.08} />
+        </div>
+        {/* 祥云缭绕 */}
+        <div className="absolute pointer-events-none" style={{ top: '12%', left: '3%' }}>
+          <AuspiciousCloud size={200} color={c.goldSolid} opacity={0.08} />
+        </div>
+        <div className="absolute pointer-events-none" style={{ top: '18%', right: '3%' }}>
+          <AuspiciousCloud size={180} color={c.goldSolid} opacity={0.06} />
+        </div>
+        {/* 法轮 */}
+        <div className="absolute pointer-events-none" style={{ top: '15%', right: '8%' }}>
+          <DharmaWheel size={80} color={c.goldSolid} opacity={0.08} />
+        </div>
+        {/* 种子字 */}
+        <div className="absolute pointer-events-none" style={{ bottom: '20%', right: '10%' }}>
+          <SeedSyllable size={50} color={c.goldSolid} opacity={0.1} syllable="唵" />
+        </div>
+        <div className="absolute pointer-events-none" style={{ top: '25%', left: '8%' }}>
+          <SeedSyllable size={40} color={c.goldSolid} opacity={0.08} syllable="吽" />
+        </div>
+        {/* 星宿图 */}
+        <div className="absolute pointer-events-none" style={{ top: '15%', right: '8%' }}>
+          <StarConstellation size={200} color="#d4a843" opacity={0.08} />
+        </div>
+        <div className="absolute pointer-events-none" style={{ bottom: '10%', left: '5%' }}>
+          <CloudPattern size={160} color="#d4a843" opacity={0.06} />
+        </div>
+        {/* 香烟缭绕 */}
+        <div className="absolute pointer-events-none" style={{ bottom: '8%', right: '8%' }}>
+          <IncenseSmoke size={60} color={c.goldSolid} opacity={0.08} />
+        </div>
+        <FadeIn className="relative mx-auto text-center w-full" y={20}>
+          <DiamondDivider color="#d4a843" opacity={0.4} className="mb-8" />
+          <div className="space-y-3" style={{ maxWidth: '840px', margin: '0 auto' }}>
+            {[
+              { textKey: 'home_phil_line1' as TKey, size: 'clamp(17px, 2.2vw, 28px)', color: 'rgba(215,228,252,0.72)', delay: 0.1 },
+              { textKey: 'home_phil_line2' as TKey, size: 'clamp(21px, 2.6vw, 32px)', color: 'rgba(220,232,250,0.74)', delay: 0.25 },
+              { textKey: 'home_phil_line3' as TKey, size: 'clamp(24px, 3vw, 40px)', color: 'rgba(218,230,248,0.8)', delay: 0.34 },
+            ].map((line, i) => (
+              <motion.p key={i}
+                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: line.delay }}
+                className="tracking-wider" style={{ fontSize: line.size, color: line.color, fontWeight: 400 }}>
+                {t(line.textKey, lang)}
+              </motion.p>
+            ))}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.45 }}
+              className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold`}
+              style={{ fontSize: 'clamp(24px, 3.4vw, 48px)', letterSpacing: '0.05em', lineHeight: 1.35 }}>
+              {t('home_phil_conclusion', lang)}
+            </motion.p>
+          </div>
+        </FadeIn>
+      </section>
+
       {/* ══ 紫微命盘（起盘入口） ═══════════════════════════ */}
       <section className="relative z-10 py-40 px-6 text-center overflow-hidden" style={{ background: c.altSection }}>
         {/* 星光装饰 */}
         <FloatingStars count={8} color={c.goldSolid} opacity={0.12} />
+        {/* 曼陀罗坛城 */}
+        <div className="absolute pointer-events-none" style={{ top: '10%', left: '50%', transform: 'translateX(-50%)' }}>
+          <Mandala size={500} color={c.goldSolid} opacity={0.04} />
+        </div>
         {/* 太极图装饰 */}
         <div className="absolute hidden lg:block pointer-events-none" style={{ top: '20%', left: '8%' }}>
           <SpinningTaiji size={70} color={c.goldSolid} opacity={0.05} />
         </div>
         <div className="absolute hidden lg:block pointer-events-none" style={{ bottom: '20%', right: '8%' }}>
           <StarConstellation size={140} color={c.goldSolid} opacity={0.06} />
+        </div>
+        {/* 菩提叶 */}
+        <div className="absolute hidden lg:block pointer-events-none" style={{ top: '25%', right: '5%' }}>
+          <BodhiLeaf size={80} color={c.goldSolid} opacity={0.06} />
+        </div>
+        {/* 烛火 */}
+        <div className="absolute pointer-events-none" style={{ bottom: '15%', left: '10%' }}>
+          <SacredFlame size={30} color={c.goldSolid} opacity={0.1} />
+        </div>
+        <div className="absolute pointer-events-none" style={{ bottom: '15%', right: '10%' }}>
+          <SacredFlame size={30} color={c.goldSolid} opacity={0.1} />
         </div>
         <FadeIn>
           <DiamondDivider color={c.goldSolid} opacity={0.4} className="mb-6" />
@@ -477,6 +354,14 @@ export default function HomePage() {
         <div className="absolute hidden lg:block pointer-events-none" style={{ top: '15%', left: '5%' }}>
           <StarConstellation size={160} color={c.goldSolid} opacity={0.06} />
         </div>
+        {/* 祥云装饰 */}
+        <div className="absolute pointer-events-none" style={{ top: '10%', right: '5%' }}>
+          <AuspiciousCloud size={140} color={c.goldSolid} opacity={0.06} />
+        </div>
+        {/* 寺庙轮廓 */}
+        <div className="absolute pointer-events-none" style={{ bottom: '5%', left: '50%', transform: 'translateX(-50%)' }}>
+          <TempleSilhouette size={300} color={c.goldSolid} opacity={0.04} />
+        </div>
         <div className="mx-auto" style={{ maxWidth: '1280px' }}>
           <div className="rounded-2xl p-10 md:p-14 text-center relative overflow-hidden"
             style={{
@@ -529,6 +414,10 @@ export default function HomePage() {
       {/* ══ 命理工具展示 ════════════════════════════════════ */}
       <section className="relative z-10">
         <WeakBoundary line={c.navBorder} />
+        {/* 法轮装饰 */}
+        <div className="absolute pointer-events-none" style={{ top: '5%', right: '5%' }}>
+          <DharmaWheel size={100} color={c.goldSolid} opacity={0.05} />
+        </div>
         <FadeIn className="text-center mb-12 pt-20">
           <DiamondDivider color={c.goldSolid} opacity={0.4} className="mb-6" />
           <h2 className={`grad-text ${theme === 'dark' ? 'grad-text-dark' : 'grad-text-light'} font-bold mt-4 tracking-tight`}
@@ -606,7 +495,7 @@ export default function HomePage() {
                   <FadeIn delay={0.15}>
                     <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 flex items-center justify-center"
                       style={{ border: `1px solid ${c.featureBord}`, background: c.featureBg, minHeight: '400px', boxShadow: c.cardShadow }}>
-                      <ToolVisual index={i} colors={c} accent={tool.accent} icon={tool.icon} lang={lang} />
+                      <ToolDemo index={i} colors={c} accent={tool.accent} lang={lang} />
                     </div>
                   </FadeIn>
                 </div>

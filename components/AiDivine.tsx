@@ -3,6 +3,7 @@ import { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useLang } from '@/lib/i18n/LanguageContext';
+import InsufficientCredits from '@/components/InsufficientCredits';
 
 interface AiDivineProps {
   tool: 'daily' | 'cezi' | 'chouqian' | 'tongqian' | 'mianxiang' | 'shouxiang';
@@ -160,7 +161,9 @@ export default function AiDivine({
           </div>
 
           {aiError && (
-            <p className="text-sm" style={{ color: '#f87171' }}>{aiError}</p>
+            <div>
+              <InsufficientCredits message={aiError} goldSolid={goldSolid} />
+            </div>
           )}
 
           {aiLoading && !aiResult && (

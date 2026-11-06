@@ -25,7 +25,7 @@ export const T = {
 
   // ── 首页关键按钮 ──
   home_start_chart: { zh: '立即起盘', en: 'Start Your Chart' },
-  home_free_chart: { zh: '免费起盘', en: 'Free Chart' },
+  home_free_chart: { zh: '立即起盘', en: 'Free Chart' },
   home_explore_more: { zh: '探索更多', en: 'Explore More' },
   home_start_heming: { zh: '开始合盘分析', en: 'Start Compatibility' },
   home_chart_title: { zh: '紫微命盘', en: 'Ziwei Chart' },
@@ -140,7 +140,7 @@ export const T = {
   recharge_premium: { zh: '★ 会员用户', en: '★ Premium' },
   recharge_paid: { zh: '充值用户', en: 'Paid User' },
   recharge_section: { zh: '充值', en: 'Recharge' },
-  recharge_benefit_1: { zh: '充值 1 USDT 赠送 100 积分', en: '1 USDT = 100 credits' },
+  recharge_benefit_1: { zh: '充值 1 USDT 赠送 10 积分', en: '1 USDT = 10 credits' },
   recharge_benefit_2: { zh: '积分可用于起盘、合盘、AI解盘、AI问答、打赏', en: 'Credits can be used for chart, compatibility, AI reading, Q&A, and tipping' },
   recharge_benefit_3: { zh: '支持 ETH / Polygon / BSC 三条链，USDT / USDC / USDS 三种代币', en: 'Supports ETH / Polygon / BSC with USDT / USDC / USDS' },
   recharge_select_chain: { zh: '选择公链', en: 'Select Chain' },
@@ -190,9 +190,9 @@ export const T = {
   credits_new_user: { zh: '新用户：', en: 'New user: ' },
   credits_new_user_desc: { zh: '注册自动赠送 50 积分', en: '50 free credits upon registration' },
   credits_recharge: { zh: '充值：', en: 'Recharge: ' },
-  credits_recharge_desc: { zh: '1 USDT = 100 积分（支持 USDT / USDC / USDS）', en: '1 USDT = 100 credits (USDT / USDC / USDS)' },
+  credits_recharge_desc: { zh: '1 USDT = 10 积分（支持 USDT / USDC / USDS）', en: '1 USDT = 10 credits (USDT / USDC / USDS)' },
   credits_consume: { zh: '消耗：', en: 'Cost: ' },
-  credits_consume_desc: { zh: '起盘 20 · 合盘 50 · AI解盘 100 · AI问答 10 · 打赏 10', en: 'Chart 20 · Compatibility 50 · AI Reading 100 · Q&A 10 · Tip 10' },
+  credits_consume_desc: { zh: '起盘 20 · 合盘 50 · AI解盘 10 · AI问答 10 · 六术 10 · 风水 10 · 打赏 10', en: 'Chart 20 · Compatibility 50 · AI Reading 10 · Q&A 10 · Divination 10 · Feng Shui 10 · Tip 10' },
 
   // ── AiActions ──
   action_like: { zh: '赞', en: 'Like' },
@@ -244,6 +244,18 @@ export const T = {
   profile_upgrade: { zh: '升级会员', en: 'Upgrade Membership' },
   profile_upgrade_desc: { zh: '充值后可使用 AI 解盘、合盘等功能，起盘次数不受限制。', en: 'Recharge to unlock AI reading, compatibility analysis, and unlimited chart casting.' },
   profile_user: { zh: '用户', en: 'User' },
+  profile_personal_info: { zh: '个人信息', en: 'Personal Info' },
+  profile_personal_info_desc: { zh: '填写个人信息后，测字、抽签、铜钱卦等工具的解读将因人而异', en: 'Fill in personal info for personalized divination results' },
+  profile_gender: { zh: '性别', en: 'Gender' },
+  profile_gender_male: { zh: '男', en: 'Male' },
+  profile_gender_female: { zh: '女', en: 'Female' },
+  profile_birth_date: { zh: '出生日期', en: 'Birth Date' },
+  profile_birth_date_placeholder: { zh: '如：1990-01-15', en: 'e.g. 1990-01-15' },
+  profile_birth_city: { zh: '出生城市', en: 'Birth City' },
+  profile_birth_city_placeholder: { zh: '如：浙江杭州', en: 'e.g. Hangzhou, Zhejiang' },
+  profile_current_city: { zh: '所在城市', en: 'Current City' },
+  profile_current_city_placeholder: { zh: '如：上海', en: 'e.g. Shanghai' },
+  profile_save_personal: { zh: '保存个人信息', en: 'Save Personal Info' },
 
   // ── 每日运势 ──
   daily_title: { zh: '每日运势', en: 'Daily Fortune' },
@@ -301,6 +313,19 @@ export const T = {
   nav_tongqian: { zh: '铜钱', en: 'Coins' },
   nav_mianxiang: { zh: '面相', en: 'Face' },
   nav_shouxiang: { zh: '手相', en: 'Palm' },
+
+  nav_prayer: { zh: '祈福', en: 'Prayer' },
+  nav_wish: { zh: '许愿', en: 'Wish' },
+  nav_repent: { zh: '忏悔', en: 'Repent' },
+  nav_lamp: { zh: '长明灯', en: 'Eternal Lamp' },
+  nav_incense: { zh: '上香', en: 'Incense' },
+  nav_ritual: { zh: '祭祀', en: 'Ritual' },
+  nav_recitation: { zh: '诵经', en: 'Recitation' },
+  nav_vegetarian: { zh: '吃斋', en: 'Vegetarian' },
+  nav_meditation: { zh: '打坐', en: 'Meditation' },
+  nav_reflection: { zh: '每日三省', en: 'Reflection' },
+  nav_taichi: { zh: '太极', en: 'Tai Chi' },
+  nav_charity: { zh: '积德行善', en: 'Charity' },
 
   // ── 首页 Hero ──
   home_hero_tag: { zh: '紫微斗数 · 倪海厦体系', en: 'Ziwei Dou Shu · Ni Haixia Lineage' },

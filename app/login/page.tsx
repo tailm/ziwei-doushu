@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/auth/AuthContext';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { useTheme } from '@/components/ThemeProvider';
+import SiteFooter from '@/components/SiteFooter';
 
 export default function LoginPage() {
   return (
@@ -304,6 +305,7 @@ function LoginPageInner() {
           </button>
         </div>
       </motion.div>
+      <SiteFooter />
     </div>
   );
 }

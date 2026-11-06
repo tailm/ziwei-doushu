@@ -1,60 +1,33 @@
+import cnchar from 'cnchar-all';
 import type { CeziResult, FiveElement, CharacterStructure, FortuneLevel, RadicalInfo } from './types';
 import { RADICAL_ELEMENT_MAP, RADICAL_INFO, STROKE_FORTUNE_81, FIVE_ELEMENT_ATTR } from './data';
 
-const COMMON_RADICALS = [
-  '钅', '金', '木', '水', '氵', '火', '灬', '土', '日', '月', '山', '石', '田',
-  '人', '亻', '口', '心', '忄', '手', '扌', '女', '子', '言', '讠', '刀', '刂',
-  '力', '目', '耳', '足', '⻊', '车', '马', '鸟', '鱼', '虫', '艹', '竹', '禾',
-  '米', '门', '广', '雨', '风', '衣', '衤', '贝', '示', '礻', '病', '疒', '穴',
-  '王', '玉', '弓', '戈', '斗', '寸', '页', '骨', '血', '舟', '户', '厂', '立',
-  '止', '邑', '阝', '斤', '矢', '白', '黑', '赤', '青', '黄', '色', '音', '香',
-  '革', '韦', '瓦', '皿', '缶', '网', '糸', '纟', '老', '而', '至', '臼', '角',
-  '麦', '韭', '鼓', '鼠', '鹿', '鬼', '走', '辶', '彳', '歹', '殳', '攵', '夂',
-  '欠', '殸', '缶', '耒', '糸', '罒', '老', '而', '羽', '缶', '舌', '竹', '臼',
-  '舟', '艮', '豕', '隶', '隹', '雨', '非', '面', '革', '韋', '音', '頁', '風',
-  '飛', '食', '首', '香', '馬', '骨', '鬼', '魚', '鳥', '鹿', '麥', '麻', '黃',
-  '黍', '黑', '鼎', '鼓', '鼠', '鼻', '齒',
-];
+const STRUCTURE_MAP: Record<string, CharacterStructure> = {
+  '左右结构': '左右',
+  '上下结构': '上下',
+  '左中右结构': '左中右',
+  '上中下结构': '上中下',
+  '半包围结构': '半包围',
+  '全包围结构': '全包围',
+  '品字结构': '品字',
+  '独体结构': '独体',
+};
 
-function detectRadical(char: string): string {
-  if (char.length === 0) return '';
-  const firstChar = char[0];
-  for (const radical of COMMON_RADICALS) {
-    if (firstChar === radical) return radical;
+function getRadicalInfo(char: string): { radical: string; structure: CharacterStructure } {
+  const result = cnchar.radical(char);
+  if (Array.isArray(result) && result.length > 0) {
+    const r = result[0];
+    const structure = STRUCTURE_MAP[r.struct] ?? '独体';
+    return { radical: r.radical, structure };
   }
-  if (char.length >= 2) {
-    for (const radical of COMMON_RADICALS) {
-      if (char.startsWith(radical)) return radical;
-    }
-  }
-  const code = firstChar.charCodeAt(0);
-  if (code >= 0x4e00 && code <= 0x9fff) {
-    return firstChar;
-  }
-  return firstChar;
-}
-
-function detectStructure(char: string): CharacterStructure {
-  if (char.length === 0) return '独体';
-  if (char.length === 1) {
-    const c = char[0];
-    if (COMMON_RADICALS.includes(c)) return '独体';
-    return '独体';
-  }
-  if (char.length === 2) return '左右';
-  if (char.length === 3) return '左中右';
-  if (char.length === 4) {
-    if (char[0] === char[1] && char[2] === char[3]) return '品字';
-    return '上下';
-  }
-  return '上下';
+  return { radical: char, structure: '独体' };
 }
 
 function getRadicalElement(radical: string): FiveElement {
   return RADICAL_ELEMENT_MAP[radical] ?? '土';
 }
 
-function getRadicalInfo(radical: string): RadicalInfo {
+function getRadicalMeaning(radical: string): RadicalInfo {
   return RADICAL_INFO[radical] ?? { radical, element: getRadicalElement(radical), meaning: '未知偏旁' };
 }
 
@@ -74,6 +47,7 @@ function generateInterpretation(
   structure: CharacterStructure,
   strokeFortune: { level: FortuneLevel; desc: string },
   radicalInfo: RadicalInfo,
+  strokeCount: number,
 ): string {
   const parts: string[] = [];
 
@@ -91,7 +65,7 @@ function generateInterpretation(
   };
   parts.push(structDesc[structure] + '。');
 
-  parts.push(`笔画数${strokeFortune.desc}。`);
+  parts.push(`笔画数${strokeCount}，${strokeFortune.desc}。`);
 
   const elemAttr = FIVE_ELEMENT_ATTR[element];
   parts.push(`五行${element}主${elemAttr.trait}，方位在${elemAttr.direction}。`);
@@ -144,17 +118,17 @@ export function interpretCharacter(char: string): CeziResult | null {
     return null;
   }
 
-  const radical = detectRadical(firstChar);
-  const radicalInfo = getRadicalInfo(radical);
+  const { radical, structure } = getRadicalInfo(firstChar);
+  const radicalInfo = getRadicalMeaning(radical);
   const element = getRadicalElement(radical);
-  const structure = detectStructure(firstChar);
 
-  const strokeCount = trimmed.length;
+  const strokeResult = cnchar.stroke(firstChar);
+  const strokeCount = typeof strokeResult === 'number' ? strokeResult : Array.isArray(strokeResult) ? strokeResult[0] : 1;
   const kangxiStrokes = strokeCount;
   const strokeFortune = getStrokeFortune(strokeCount);
 
   const interpretation = generateInterpretation(
-    firstChar, radical, element, structure, strokeFortune, radicalInfo,
+    firstChar, radical, element, structure, strokeFortune, radicalInfo, strokeCount,
   );
   const advice = generateAdvice(element, strokeFortune, structure);
 
