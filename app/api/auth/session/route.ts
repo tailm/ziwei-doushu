@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession, getUserById } from '@/lib/db';
+import { getSession, getUserById, isAdmin } from '@/lib/db';
 
 export const runtime = 'nodejs';
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
       birth_date: user.birth_date,
       birth_city: user.birth_city,
       current_city: user.current_city,
-      membership_tier: user.membership_tier,
+      membership_tier: isAdmin(user.wallet_address) ? 'admin' : user.membership_tier,
       membership_expires_at: user.membership_expires_at,
       balance: user.balance,
       credits: user.credits,

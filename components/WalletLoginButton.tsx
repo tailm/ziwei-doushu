@@ -70,6 +70,16 @@ export default function WalletLoginButton() {
                 {shortAddress}
               </div>
             </div>
+            {user.membership_tier === 'admin' && (
+              <Link
+                href="/admin"
+                className="block px-4 py-2 text-xs transition-colors hover:bg-[var(--bg-2)]"
+                style={{ color: 'var(--gold-solid)', borderBottom: '1px solid var(--bdr)' }}
+                onClick={() => setMenuOpen(false)}
+              >
+                {t('nav_admin', lang)}
+              </Link>
+            )}
             <DailyCheckinProgress />
             <Link
               href="/profile"
@@ -95,16 +105,7 @@ export default function WalletLoginButton() {
             >
               {t('nav_recharge', lang)}
             </Link>
-            {user.membership_tier === 'admin' && (
-              <Link
-                href="/admin"
-                className="block px-4 py-2 text-xs transition-colors hover:bg-[var(--bg-2)]"
-                style={{ color: 'var(--gold-solid)' }}
-                onClick={() => setMenuOpen(false)}
-              >
-                {t('nav_admin', lang)}
-              </Link>
-            )}
+
             <button
               onClick={() => { logout(); setMenuOpen(false); }}
               className="block w-full text-left px-4 py-2 text-xs transition-colors"

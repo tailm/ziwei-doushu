@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/components/ThemeProvider';
 import { useLang } from '@/lib/i18n/LanguageContext';
 import { useAuth } from '@/lib/auth/AuthContext';
@@ -162,23 +162,33 @@ export default function NavigationBar() {
               <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          {toolsOpen && (
-            <div className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg shadow-lg z-50 min-w-[140px]"
-              style={{ background: c.cardBg, border: `1px solid ${c.navBorder}` }}>
-              {toolItems.map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => { setToolsOpen(false); router.push(item.path); }}
-                  className="text-xs px-3 py-1.5 rounded transition-all duration-200 text-left"
-                  style={{ color: c.textMuted }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
-                >
-                  {t(item.key, lang)}
-                </button>
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {toolsOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg z-50 min-w-[140px]"
+                style={{ background: c.cardBg, border: `1px solid ${c.navBorder}`, boxShadow: `0 8px 24px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)` }}>
+                {toolItems.map((item, idx) => (
+                  <motion.button
+                    key={item.path}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04 }}
+                    onClick={() => { setToolsOpen(false); router.push(item.path); }}
+                    className="text-xs px-3 py-1.5 rounded transition-all duration-200 text-left"
+                    style={{ color: c.textMuted }}
+                    onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
+                  >
+                    {t(item.key, lang)}
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <div className="relative">
           <button
@@ -195,23 +205,33 @@ export default function NavigationBar() {
               <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          {ritualsOpen && (
-            <div className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg shadow-lg z-50 min-w-[140px]"
-              style={{ background: c.cardBg, border: `1px solid ${c.navBorder}` }}>
-              {ritualItems.map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => { setRitualsOpen(false); router.push(item.path); }}
-                  className="text-xs px-3 py-1.5 rounded transition-all duration-200 text-left"
-                  style={{ color: c.textMuted }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
-                >
-                  {t(item.key, lang)}
-                </button>
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {ritualsOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg z-50 min-w-[140px]"
+                style={{ background: c.cardBg, border: `1px solid ${c.navBorder}`, boxShadow: `0 8px 24px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)` }}>
+                {ritualItems.map((item, idx) => (
+                  <motion.button
+                    key={item.path}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04 }}
+                    onClick={() => { setRitualsOpen(false); router.push(item.path); }}
+                    className="text-xs px-3 py-1.5 rounded transition-all duration-200 text-left"
+                    style={{ color: c.textMuted }}
+                    onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
+                  >
+                    {t(item.key, lang)}
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <div className="relative">
           <button
@@ -228,23 +248,33 @@ export default function NavigationBar() {
               <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          {wellnessOpen && (
-            <div className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg shadow-lg z-50 min-w-[140px]"
-              style={{ background: c.cardBg, border: `1px solid ${c.navBorder}` }}>
-              {wellnessItems.map(item => (
-                <button
-                  key={item.path}
-                  onClick={() => { setWellnessOpen(false); router.push(item.path); }}
-                  className="text-xs px-3 py-1.5 rounded transition-all duration-200 text-left"
-                  style={{ color: c.textMuted }}
-                  onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
-                >
-                  {t(item.key, lang)}
-                </button>
-              ))}
-            </div>
-          )}
+          <AnimatePresence>
+            {wellnessOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="absolute left-0 top-full mt-1 flex flex-col gap-1 p-2 rounded-lg z-50 min-w-[140px]"
+                style={{ background: c.cardBg, border: `1px solid ${c.navBorder}`, boxShadow: `0 8px 24px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.1)` }}>
+                {wellnessItems.map((item, idx) => (
+                  <motion.button
+                    key={item.path}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.04 }}
+                    onClick={() => { setWellnessOpen(false); router.push(item.path); }}
+                    className="text-xs px-3 py-1.5 rounded transition-all8duration-200 text-left"
+                    style={{ color: c.textMuted }}
+                    onMouseEnter={e => { e.currentTarget.style.background = `${c.goldLine}20`; e.currentTarget.style.color = c.goldSolid; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = c.textMuted; }}
+                  >
+                    {t(item.key, lang)}
+                  </motion.button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <motion.button
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
@@ -271,6 +301,12 @@ export default function NavigationBar() {
           className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
           style={navItemStyle('/library')}>
           {t('nav_library', lang)}
+        </motion.a>
+        <motion.a
+          href="/ranking"
+          className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
+          style={navItemStyle('/ranking')}>
+          {lang === 'zh' ? '排行榜' : 'Ranking'}
         </motion.a>
 
       </div>

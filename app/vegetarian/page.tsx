@@ -153,9 +153,7 @@ export default function VegetarianPage() {
       <NavigationBar />
       <div className="max-w-2xl mx-auto px-4 pt-20 pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <motion.div className="flex justify-center mb-2" animate={{ y: [0, -8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}>
-            <VeggieLeaf color={c.greenAccent} size={60} />
-          </motion.div>
+
           <h1 className="text-2xl font-bold mb-2" style={{ color: c.greenAccent }}>
             {lang === 'zh' ? '吃斋打卡' : 'Vegetarian Check-in'}
           </h1>
@@ -165,7 +163,7 @@ export default function VegetarianPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center mb-4">
-          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
+          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}`, boxShadow: `0 4px 24px rgba(0,0,0,0.15), inset 0 0 40px ${c.greenAccent}08` }}>
             <div className="text-center">
               <div className="text-3xl font-bold" style={{ color: c.greenAccent }}>{streak}</div>
               <div className="text-xs mt-1" style={{ color: c.textMuted }}>{lang === 'zh' ? '连续天数' : 'Day Streak'}</div>

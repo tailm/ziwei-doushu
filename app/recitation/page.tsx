@@ -667,7 +667,7 @@ export default function RecitationPage() {
                     <div
                       key={i}
                       className="flex items-center justify-between p-3 rounded-lg text-sm"
-                      style={{ background: c.cardBg, border: `1px solid ${c.border}` }}
+            style={{ background: c.cardBg, border: `1px solid ${c.border}`, boxShadow: `0 4px 24px rgba(0,0,0,0.15), inset 0 0 40px ${c.goldSolid}08` }}
                     >
                       <div className="flex items-center gap-2">
                         <span style={{ color: r.session_type === 'morning' ? '#e8a030' : '#5078c8' }}>

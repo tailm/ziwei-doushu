@@ -43,11 +43,26 @@ export async function callAI(
   });
 
   if (!response.ok) {
-    throw new Error(`AI API error: ${response.status} ${response.statusText}`);
+    const errText = await response.text().catch(() => '');
+    throw new Error(`AI API error: ${response.status} ${response.statusText} ${errText}`);
   }
 
   if (!response.body) {
     throw new Error('AI API returned no body');
+  }
+
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('text/event-stream')) {
+    const errText = await response.text().catch(() => '');
+    let errMsg = 'AI API returned non-stream response';
+    try {
+      const errJson = JSON.parse(errText);
+      if (errJson.error) errMsg = typeof errJson.error === 'string' ? errJson.error : JSON.stringify(errJson.error);
+      else if (errJson.message) errMsg = errJson.message;
+    } catch {
+      if (errText) errMsg = errText.slice(0, 200);
+    }
+    throw new Error(errMsg);
   }
 
   return response.body;

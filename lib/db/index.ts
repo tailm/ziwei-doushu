@@ -147,6 +147,12 @@ function initSchema(database: Database.Database) {
     CREATE INDEX IF NOT EXISTS idx_wellness_user ON wellness_records(user_id);
     CREATE INDEX IF NOT EXISTS idx_wellness_type ON wellness_records(practice_type);
     CREATE INDEX IF NOT EXISTS idx_wellness_date ON wellness_records(created_at);
+
+    CREATE TABLE IF NOT EXISTS feature_stats (
+      feature TEXT PRIMARY KEY,
+      click_count INTEGER DEFAULT 0,
+      last_clicked_at TEXT
+    );
   `);
 
   // 迁移：为已有数据库添加 credits 字段
@@ -445,7 +451,7 @@ function generateSessionId(): string {
 }
 
 function generateNonce(): string {
-  return crypto.randomBytes(24).toString('base64url');
+  return crypto.randomBytes(16).toString('hex');
 }
 export function getAllUsers(): UserRow[] {
   const db = getDb();
@@ -455,6 +461,11 @@ export function getAllUsers(): UserRow[] {
 export function getAllRechargeRecords(): RechargeRecordRow[] {
   const db = getDb();
   return db.prepare('SELECT * FROM recharge_records ORDER BY created_at DESC').all() as RechargeRecordRow[];
+}
+
+export function getAllCreditsLog(limit: number = 200): CreditsLogRow[] {
+  const db = getDb();
+  return db.prepare('SELECT * FROM credits_log ORDER BY created_at DESC LIMIT ?').all(limit) as CreditsLogRow[];
 }
 
 export function getRechargeRecordsByStatus(status: string): RechargeRecordRow[] {
@@ -634,4 +645,415 @@ export function getWellnessStreak(userId: number, practiceType: string): { curre
   }
 
   return { current_streak, today_checked };
+}
+export interface CheckinCalendarDay {
+  date: string;
+  count: number;
+  types: string[];
+}
+
+export interface CheckinOverview {
+  calendar: CheckinCalendarDay[];
+  stats: {
+    total_days: number;
+    total_checkins: number;
+    by_type: Record<string, number>;
+    current_streaks: Record<string, number>;
+    longest_streak: number;
+    this_week_count: number;
+    this_month_count: number;
+  };
+  achievements: Array<{
+    key: string;
+    title_zh: string;
+    title_en: string;
+    desc_zh: string;
+    desc_en: string;
+    unlocked: boolean;
+    progress: number;
+    target: number;
+    icon: string;
+  }>;
+}
+
+const ACHIEVEMENT_DEFS = [
+  { key: 'first_step', title_zh: '初入道门', title_en: 'First Step', desc_zh: '完成首次打卡', desc_en: 'Complete your first check-in', target: 1, icon: '🌟' },
+  { key: 'seven_days', title_zh: '七日不辍', title_en: 'Seven Days', desc_zh: '连续打卡7天', desc_en: '7-day streak', target: 7, icon: '🔥' },
+  { key: 'thirty_days', title_zh: '三十日修行', title_en: 'Thirty Days', desc_zh: '连续打卡30天', desc_en: '30-day streak', target: 30, icon: '⚡' },
+  { key: 'hundred_days', title_zh: '百日筑基', title_en: 'Hundred Days', desc_zh: '连续打卡100天', desc_en: '100-day streak', target: 100, icon: '🏔' },
+  { key: 'all_six', title_zh: '六根清净', title_en: 'All Six', desc_zh: '同日完成全部6项打卡', desc_en: 'Complete all 6 check-ins in one day', target: 6, icon: '☯' },
+  { key: 'total_50', title_zh: '半百之勤', title_en: 'Fifty Check-ins', desc_zh: '累计打卡50次', desc_en: '50 total check-ins', target: 50, icon: '📖' },
+  { key: 'total_200', title_zh: '二百精进', title_en: 'Two Hundred', desc_zh: '累计打卡200次', desc_en: '200 total check-ins', target: 200, icon: '🪷' },
+  { key: 'total_500', title_zh: '五百圆满', title_en: 'Five Hundred', desc_zh: '累计打卡500次', desc_en: '500 total check-ins', target: 500, icon: '🙏' },
+];
+
+export function getCheckinOverview(userId: number): CheckinOverview {
+  const db = getDb();
+
+  const wellnessRecords = db.prepare(
+    "SELECT practice_type, date(created_at) as d FROM wellness_records WHERE user_id = ?",
+  ).all(userId) as Array<{ practice_type: string; d: string }>;
+
+  const recitationRecords = db.prepare(
+    "SELECT session_type, date(created_at) as d FROM recitation_records WHERE user_id = ?",
+  ).all(userId) as Array<{ session_type: string; d: string }>;
+
+  const dayMap = new Map<string, Set<string>>();
+  for (const r of wellnessRecords) {
+    if (!dayMap.has(r.d)) dayMap.set(r.d, new Set());
+    dayMap.get(r.d)!.add(r.practice_type);
+  }
+  for (const r of recitationRecords) {
+    if (!dayMap.has(r.d)) dayMap.set(r.d, new Set());
+    dayMap.get(r.d)!.add('recitation');
+  }
+
+  const calendar: CheckinCalendarDay[] = [];
+  const sortedDays = Array.from(dayMap.keys()).sort();
+  for (const d of sortedDays) {
+    const types = Array.from(dayMap.get(d)!);
+    calendar.push({ date: d, count: types.length, types });
+  }
+
+  const byType: Record<string, number> = {};
+  for (const r of wellnessRecords) {
+    byType[r.practice_type] = (byType[r.practice_type] || 0) + 1;
+  }
+  byType['recitation'] = recitationRecords.length;
+
+  const total_checkins = wellnessRecords.length + recitationRecords.length;
+  const total_days = dayMap.size;
+
+  const currentStreaks: Record<string, number> = {};
+  const practiceTypes = ['vegetarian', 'meditation', 'reflection', 'taichi', 'charity'];
+  for (const pt of practiceTypes) {
+    currentStreaks[pt] = getWellnessStreak(userId, pt).current_streak;
+  }
+  currentStreaks['recitation'] = getRecitationStreak(userId).current_streak;
+
+  const longestStreak = Math.max(...Object.values(currentStreaks), 0);
+
+  const now = new Date();
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - now.getDay());
+  const weekStartStr = weekStart.toISOString().slice(0, 10);
+  const monthStartStr = now.toISOString().slice(0, 7);
+
+  let this_week_count = 0;
+  let this_month_count = 0;
+  for (const d of sortedDays) {
+    if (d >= weekStartStr) this_week_count++;
+    if (d.startsWith(monthStartStr)) this_month_count++;
+  }
+
+  const maxDailyTypes = Math.max(...calendar.map(c => c.count), 0);
+
+  const achievements = ACHIEVEMENT_DEFS.map(def => {
+    let progress = 0;
+    let unlocked = false;
+    switch (def.key) {
+      case 'first_step':
+        progress = total_checkins > 0 ? 1 : 0;
+        unlocked = total_checkins > 0;
+        break;
+      case 'seven_days':
+      case 'thirty_days':
+      case 'hundred_days':
+        progress = longestStreak;
+        unlocked = longestStreak >= def.target;
+        break;
+      case 'all_six':
+        progress = maxDailyTypes;
+        unlocked = maxDailyTypes >= 6;
+        break;
+      case 'total_50':
+      case 'total_200':
+      case 'total_500':
+        progress = total_checkins;
+        unlocked = total_checkins >= def.target;
+        break;
+    }
+    return { ...def, unlocked, progress: Math.min(progress, def.target) };
+  });
+
+  return {
+    calendar,
+    stats: {
+      total_days,
+      total_checkins,
+      by_type: byType,
+      current_streaks: currentStreaks,
+      longest_streak: longestStreak,
+      this_week_count,
+      this_month_count,
+    },
+    achievements,
+  };
+}
+export function incrementFeatureClick(feature: string): void {
+  const db = getDb();
+  db.prepare(
+    `INSERT INTO feature_stats (feature, click_count, last_clicked_at) VALUES (?, 1, datetime('now'))
+     ON CONFLICT(feature) DO UPDATE SET click_count = click_count + 1, last_clicked_at = datetime('now')`,
+  ).run(feature);
+}
+
+export interface FeatureRankingItem {
+  feature: string;
+  click_count: number;
+  zh: string;
+  en: string;
+  icon: string;
+  path: string;
+  category: string;
+}
+
+const FEATURE_META: Record<string, { zh: string; en: string; icon: string; path: string; category: string }> = {
+  chart: { zh: '紫微起盘', en: 'Chart', icon: '🌟', path: '/chart', category: '命理' },
+  heming: { zh: '紫微合盘', en: 'Compatibility', icon: '💕', path: '/heming', category: '命理' },
+  daily: { zh: '每日运势', en: 'Daily Fortune', icon: '☀', path: '/daily', category: '占卜' },
+  cezi: { zh: '测字', en: 'Word Divination', icon: '✍', path: '/cezi', category: '占卜' },
+  chouqian: { zh: '抽签', en: 'Draw Lots', icon: '🎋', path: '/chouqian', category: '占卜' },
+  tongqian: { zh: '铜钱占卜', en: 'Coin Divination', icon: '🪙', path: '/tongqian', category: '占卜' },
+  mianxiang: { zh: 'AI面相', en: 'Face Reading', icon: '👁', path: '/mianxiang', category: '相术' },
+  shouxiang: { zh: 'AI手相', en: 'Palm Reading', icon: '✋', path: '/shouxiang', category: '相术' },
+  fengshui: { zh: '风水分析', en: 'Feng Shui', icon: '🏠', path: '/fengshui', category: '相术' },
+  library: { zh: '古籍库', en: 'Classics', icon: '📖', path: '/library', category: '知识' },
+  knowledge: { zh: '知识库', en: 'Knowledge', icon: '📚', path: '/knowledge', category: '知识' },
+  recitation: { zh: '诵经打卡', en: 'Recitation', icon: '🔔', path: '/recitation', category: '打卡' },
+  vegetarian: { zh: '吃斋打卡', en: 'Vegetarian', icon: '🥬', path: '/vegetarian', category: '打卡' },
+  meditation: { zh: '打坐打卡', en: 'Meditation', icon: '🧘', path: '/meditation', category: '打卡' },
+  reflection: { zh: '每日三省', en: 'Reflection', icon: '🔍', path: '/reflection', category: '打卡' },
+  taichi: { zh: '太极打卡', en: 'Tai Chi', icon: '☯', path: '/taichi', category: '打卡' },
+  charity: { zh: '积德行善', en: 'Charity', icon: '🤝', path: '/charity', category: '打卡' },
+  prayer: { zh: '祈福', en: 'Prayer', icon: '🙏', path: '/prayer', category: '修持' },
+  wish: { zh: '许愿', en: 'Wish', icon: '🌠', path: '/wish', category: '修持' },
+  repent: { zh: '忏悔', en: 'Repentance', icon: '💧', path: '/repent', category: '修持' },
+  lamp: { zh: '长明灯', en: 'Eternal Lamp', icon: '🔥', path: '/lamp', category: '修持' },
+  incense: { zh: '上香', en: 'Incense', icon: '🕯', path: '/incense', category: '修持' },
+  ritual: { zh: '祭祀', en: 'Ritual', icon: '🏮', path: '/ritual', category: '修持' },
+};
+
+export interface AdminStats {
+  user_registration_trend: Array<{ date: string; count: number }>;
+  daily_active_users: Array<{ date: string; count: number }>;
+  checkin_by_type: Array<{ type: string; total: number; last_7d: number }>;
+  checkin_trend_30d: Array<{ date: string; count: number }>;
+  feature_usage: Array<{ feature: string; click_count: number; zh: string; icon: string; category: string }>;
+  recharge_summary: {
+    total_confirmed: number;
+    total_pending: number;
+    total_amount: number;
+    last_30d_amount: number;
+  };
+  user_summary: {
+    total: number;
+    premium: number;
+    free: number;
+    new_7d: number;
+    new_30d: number;
+  };
+}
+
+export function getAdminStats(): AdminStats {
+  const db = getDb();
+
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now);
+  thirtyDaysAgo.setDate(now.getDate() - 30);
+  const sevenDaysAgo = new Date(now);
+  sevenDaysAgo.setDate(now.getDate() - 7);
+  const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().slice(0, 10);
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().slice(0, 10);
+
+  const userRegistrationTrend = db.prepare(`
+    SELECT date(created_at, 'unixepoch') as date, COUNT(*) as count
+    FROM users
+    WHERE created_at >= strftime('%s', ?)
+    GROUP BY date(created_at, 'unixepoch')
+    ORDER BY date ASC
+  `).all(thirtyDaysAgoStr) as Array<{ date: string; count: number }>;
+
+  const wellnessDailyActive = db.prepare(`
+    SELECT date(created_at) as date, COUNT(DISTINCT user_id) as count
+    FROM wellness_records
+    WHERE date(created_at) >= ?
+    GROUP BY date(created_at)
+    ORDER BY date ASC
+  `).all(thirtyDaysAgoStr) as Array<{ date: string; count: number }>;
+
+  const recitationDailyActive = db.prepare(`
+    SELECT date(created_at) as date, COUNT(DISTINCT user_id) as count
+    FROM recitation_records
+    WHERE date(created_at) >= ?
+    GROUP BY date(created_at)
+    ORDER BY date ASC
+  `).all(thirtyDaysAgoStr) as Array<{ date: string; count: number }>;
+
+  const dauMap = new Map<string, Set<number>>();
+  for (const r of wellnessDailyActive) {
+    if (!dauMap.has(r.date)) dauMap.set(r.date, new Set());
+  }
+  for (const r of recitationDailyActive) {
+    if (!dauMap.has(r.date)) dauMap.set(r.date, new Set());
+  }
+
+  const wellnessDAU = db.prepare(`
+    SELECT date(created_at) as date, user_id FROM wellness_records WHERE date(created_at) >= ?
+  `).all(thirtyDaysAgoStr) as Array<{ date: string; user_id: number }>;
+  for (const r of wellnessDAU) {
+    dauMap.get(r.date)?.add(r.user_id);
+  }
+
+  const recitationDAU = db.prepare(`
+    SELECT date(created_at) as date, user_id FROM recitation_records WHERE date(created_at) >= ?
+  `).all(thirtyDaysAgoStr) as Array<{ date: string; user_id: number }>;
+  for (const r of recitationDAU) {
+    dauMap.get(r.date)?.add(r.user_id);
+  }
+
+  const dailyActiveUsers = Array.from(dauMap.entries())
+    .map(([date, users]) => ({ date, count: users.size }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const checkinByTypeRaw = db.prepare(`
+    SELECT practice_type, COUNT(*) as total FROM wellness_records GROUP BY practice_type
+  `).all() as Array<{ practice_type: string; total: number }>;
+
+  const recitationTotal = db.prepare(`SELECT COUNT(*) as total FROM recitation_records`).get() as { total: number };
+
+  const checkinLast7dRaw = db.prepare(`
+    SELECT practice_type, COUNT(*) as cnt FROM wellness_records WHERE date(created_at) >= ? GROUP BY practice_type
+  `).all(sevenDaysAgoStr) as Array<{ practice_type: string; cnt: number }>;
+
+  const recitationLast7d = db.prepare(`SELECT COUNT(*) as cnt FROM recitation_records WHERE date(created_at) >= ?`).get(sevenDaysAgoStr) as { cnt: number };
+
+  const checkinByType: Array<{ type: string; total: number; last_7d: number }> = [];
+  const typeLabels: Record<string, string> = {
+    vegetarian: '吃斋',
+    meditation: '打坐',
+    reflection: '每日三省',
+    taichi: '太极',
+    charity: '积德行善',
+    recitation: '诵经',
+  };
+  for (const [type, label] of Object.entries(typeLabels)) {
+    const totalRow = checkinByTypeRaw.find(r => r.practice_type === type);
+    const last7dRow = checkinLast7dRaw.find(r => r.practice_type === type);
+    checkinByType.push({
+      type: label,
+      total: totalRow?.total ?? 0,
+      last_7d: last7dRow?.cnt ?? 0,
+    });
+  }
+
+  const checkinTrend30d = db.prepare(`
+    SELECT date(created_at) as date, COUNT(*) as count FROM (
+      SELECT created_at FROM wellness_records WHERE date(created_at) >= ?
+      UNION ALL
+      SELECT created_at FROM recitation_records WHERE date(created_at) >= ?
+    ) GROUP BY date(created_at) ORDER BY date ASC
+  `).all(thirtyDaysAgoStr, thirtyDaysAgoStr) as Array<{ date: string; count: number }>;
+
+  const featureUsageRaw = db.prepare(`
+    SELECT feature, click_count FROM feature_stats ORDER BY click_count DESC
+  `).all() as Array<{ feature: string; click_count: number }>;
+
+  const featureUsage: Array<{ feature: string; click_count: number; zh: string; icon: string; category: string }> = [];
+  for (const row of featureUsageRaw) {
+    const meta = FEATURE_META[row.feature];
+    if (meta) {
+      featureUsage.push({
+        feature: row.feature,
+        click_count: row.click_count,
+        zh: meta.zh,
+        icon: meta.icon,
+        category: meta.category,
+      });
+    }
+  }
+
+  const rechargeSummaryRaw = db.prepare(`
+    SELECT
+      SUM(CASE WHEN status = 'confirmed' THEN 1 ELSE 0 END) as total_confirmed,
+      SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as total_pending,
+      SUM(CASE WHEN status = 'confirmed' THEN amount ELSE 0 END) as total_amount
+    FROM recharge_records
+  `).get() as { total_confirmed: number; total_pending: number; total_amount: number };
+
+  const rechargeLast30d = db.prepare(`
+    SELECT SUM(amount) as amount FROM recharge_records
+    WHERE status = 'confirmed' AND created_at >= strftime('%s', ?)
+  `).get(thirtyDaysAgoStr) as { amount: number | null };
+
+  const userSummaryRaw = db.prepare(`
+    SELECT
+      COUNT(*) as total,
+      SUM(CASE WHEN membership_tier = 'premium' THEN 1 ELSE 0 END) as premium,
+      SUM(CASE WHEN membership_tier = 'free' THEN 1 ELSE 0 END) as free,
+      SUM(CASE WHEN created_at >= strftime('%s', ?) THEN 1 ELSE 0 END) as new_7d,
+      SUM(CASE WHEN created_at >= strftime('%s', ?) THEN 1 ELSE 0 END) as new_30d
+    FROM users
+  `).get(sevenDaysAgoStr, thirtyDaysAgoStr) as { total: number; premium: number; free: number; new_7d: number; new_30d: number };
+
+  return {
+    user_registration_trend: userRegistrationTrend,
+    daily_active_users: dailyActiveUsers,
+    checkin_by_type: checkinByType,
+    checkin_trend_30d: checkinTrend30d,
+    feature_usage: featureUsage,
+    recharge_summary: {
+      total_confirmed: rechargeSummaryRaw.total_confirmed || 0,
+      total_pending: rechargeSummaryRaw.total_pending || 0,
+      total_amount: rechargeSummaryRaw.total_amount || 0,
+      last_30d_amount: rechargeLast30d.amount || 0,
+    },
+    user_summary: {
+      total: userSummaryRaw.total || 0,
+      premium: userSummaryRaw.premium || 0,
+      free: userSummaryRaw.free || 0,
+      new_7d: userSummaryRaw.new_7d || 0,
+      new_30d: userSummaryRaw.new_30d || 0,
+    },
+  };
+}
+
+export function getFeatureRanking(): FeatureRankingItem[] {
+  const db = getDb();
+  const rows = db.prepare(
+    'SELECT feature, click_count FROM feature_stats ORDER BY click_count DESC',
+  ).all() as Array<{ feature: string; click_count: number }>;
+
+  const ranking: FeatureRankingItem[] = [];
+  for (const row of rows) {
+    const meta = FEATURE_META[row.feature];
+    if (meta) {
+      ranking.push({
+        feature: row.feature,
+        click_count: row.click_count,
+        zh: meta.zh,
+        en: meta.en,
+        icon: meta.icon,
+        path: meta.path,
+        category: meta.category,
+      });
+    }
+  }
+
+  for (const [feature, meta] of Object.entries(FEATURE_META)) {
+    if (!ranking.find(r => r.feature === feature)) {
+      ranking.push({
+        feature,
+        click_count: 0,
+        zh: meta.zh,
+        en: meta.en,
+        icon: meta.icon,
+        path: meta.path,
+        category: meta.category,
+      });
+    }
+  }
+
+  ranking.sort((a, b) => b.click_count - a.click_count);
+  return ranking;
 }

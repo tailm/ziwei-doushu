@@ -19,7 +19,7 @@ export default function LoginPage() {
 function LoginPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading, login } = useAuth();
+  const { user, loading, refreshUser, refreshPermissions } = useAuth();
   const { lang } = useLang();
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -101,6 +101,8 @@ function LoginPageInner() {
       }
 
       setLoginStatus('idle');
+      await refreshUser();
+      await refreshPermissions();
       router.push(redirectPath);
     } catch (error) {
       setLoginStatus('error');
@@ -115,16 +117,15 @@ function LoginPageInner() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: c.bgBase }}>
+    <div className="min-h-screen flex flex-col px-4" style={{ background: c.bgBase }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md mx-auto flex-1 flex flex-col justify-center py-8"
       >
-        {/* 品牌标识 */}
-        <div className="text-center mb-8">
-          <div className="inline-block mb-4">
+        <div className="text-center mb-6">
+          <div className="inline-block mb-3">
             <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
               <circle cx="28" cy="28" r="26" stroke={c.goldSolid} strokeWidth="1.5" />
               <circle cx="28" cy="28" r="18" stroke={c.goldLine} strokeWidth="1" />
@@ -140,161 +141,144 @@ function LoginPageInner() {
           </p>
         </div>
 
-        {/* 登录卡片 */}
-        <div className="rounded-2xl p-6" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
-          {/* 钱包登录按钮 */}
-          <button
-            onClick={handleLogin}
-            disabled={loginStatus !== 'idle' && loginStatus !== 'error'}
-            className="w-full py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50"
-            style={{
-              background: `linear-gradient(135deg, ${c.goldSolid}, ${c.goldSolid}dd)`,
-              color: isDark ? '#020810' : '#fff',
-            }}
-          >
-            {loginStatus === 'idle' && (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22" />
-                  <path d="M12 2V12L19 16" />
-                </svg>
-                {lang === 'zh' ? '钱包登录' : 'Connect Wallet'}
-              </>
-            )}
-            {loginStatus === 'connecting' && (
-              <>
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                  ◯
-                </motion.div>
-                {lang === 'zh' ? '连接钱包中…' : 'Connecting…'}
-              </>
-            )}
-            {loginStatus === 'signing' && (
-              <>
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                  ◯
-                </motion.div>
-                {lang === 'zh' ? '等待签名…' : 'Waiting for signature…'}
-              </>
-            )}
-            {loginStatus === 'verifying' && (
-              <>
-                <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                  ◯
-                </motion.div>
-                {lang === 'zh' ? '验证中…' : 'Verifying…'}
-              </>
-            )}
-            {loginStatus === 'error' && (
-              <>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22" />
-                  <path d="M12 2V12L19 16" />
-                </svg>
-                {lang === 'zh' ? '重新登录' : 'Retry Login'}
-              </>
-            )}
-          </button>
-
-          {/* 错误提示 */}
-          {errorMsg && (
-            <div className="mt-3 p-3 rounded-lg text-xs text-center" style={{ background: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.08)', color: '#ef4444' }}>
-              {errorMsg}
-            </div>
+        <button
+          onClick={handleLogin}
+          disabled={loginStatus !== 'idle' && loginStatus !== 'error'}
+          className="w-full py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50"
+          style={{
+            background: `linear-gradient(135deg, ${c.goldSolid}, ${c.goldSolid}dd)`,
+            color: isDark ? '#020810' : '#fff',
+          }}
+        >
+          {loginStatus === 'idle' && (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22" />
+                <path d="M12 2V12L19 16" />
+              </svg>
+              {lang === 'zh' ? '钱包登录' : 'Connect Wallet'}
+            </>
           )}
+          {loginStatus === 'connecting' && (
+            <>
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                ◯
+              </motion.div>
+              {lang === 'zh' ? '连接钱包中…' : 'Connecting…'}
+            </>
+          )}
+          {loginStatus === 'signing' && (
+            <>
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                ◯
+              </motion.div>
+              {lang === 'zh' ? '等待签名…' : 'Waiting for signature…'}
+            </>
+          )}
+          {loginStatus === 'verifying' && (
+            <>
+              <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
+                ◯
+              </motion.div>
+              {lang === 'zh' ? '验证中…' : 'Verifying…'}
+            </>
+          )}
+          {loginStatus === 'error' && (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M2 12C2 6.48 6.48 2 12 2C17.52 2 22 6.48 22 12C22 17.52 17.52 22 12 22" />
+                <path d="M12 2V12L19 16" />
+              </svg>
+              {lang === 'zh' ? '重新登录' : 'Retry Login'}
+            </>
+          )}
+        </button>
 
-          {/* 分隔线 */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px" style={{ background: c.border }} />
-            <span className="text-[10px]" style={{ color: c.textFaint }}>
-              {lang === 'zh' ? '没有钱包？' : 'No wallet?'}
-            </span>
-            <div className="flex-1 h-px" style={{ background: c.border }} />
+        {errorMsg && (
+          <div className="mt-3 p-3 rounded-lg text-xs text-center" style={{ background: isDark ? 'rgba(239,68,68,0.1)' : 'rgba(239,68,68,0.08)', color: '#ef4444' }}>
+            {errorMsg}
           </div>
+        )}
 
-          {/* 安装钱包指引 */}
-          <div className="space-y-3">
-            <a
-              href="https://metamask.io/download/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
-              style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#f6851b' }}>
-                  <span className="text-white text-sm font-bold">M</span>
-                </div>
-                <div>
-                  <div className="text-sm font-medium" style={{ color: c.text }}>MetaMask</div>
-                  <div className="text-[10px]" style={{ color: c.textMuted }}>
-                    {lang === 'zh' ? '最流行的以太坊钱包' : 'Most popular Ethereum wallet'}
-                  </div>
-                </div>
-              </div>
-              <span className="text-xs" style={{ color: c.goldSolid }}>
-                {lang === 'zh' ? '安装 →' : 'Install →'}
-              </span>
-            </a>
-
-            <a
-              href="https://www.rabby.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
-              style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#7b3fe4' }}>
-                  <span className="text-white text-sm font-bold">R</span>
-                </div>
-                <div>
-                  <div className="text-sm font-medium" style={{ color: c.text }}>Rabby Wallet</div>
-                  <div className="text-[10px]" style={{ color: c.textMuted }}>
-                    {lang === 'zh' ? '安全易用的多链钱包' : 'Secure multi-chain wallet'}
-                  </div>
-                </div>
-              </div>
-              <span className="text-xs" style={{ color: c.goldSolid }}>
-                {lang === 'zh' ? '安装 →' : 'Install →'}
-              </span>
-            </a>
-
-            <a
-              href="https://walletconnect.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
-              style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#3b99fc' }}>
-                  <span className="text-white text-sm font-bold">W</span>
-                </div>
-                <div>
-                  <div className="text-sm font-medium" style={{ color: c.text }}>WalletConnect</div>
-                  <div className="text-[10px]" style={{ color: c.textMuted }}>
-                    {lang === 'zh' ? '连接200+钱包的协议' : 'Connect 200+ wallets'}
-                  </div>
-                </div>
-              </div>
-              <span className="text-xs" style={{ color: c.goldSolid }}>
-                {lang === 'zh' ? '了解 →' : 'Learn →'}
-              </span>
-            </a>
-          </div>
-
-          {/* 说明 */}
-          <div className="mt-5 pt-4 text-center" style={{ borderTop: `1px solid ${c.border}` }}>
-            <p className="text-[10px] leading-relaxed" style={{ color: c.textFaint }}>
-              {lang === 'zh'
-                ? '登录使用 SIWE（Sign-In with Ethereum）协议，您的钱包签名即登录凭证，无需密码。我们不会存储您的私钥。'
-                : 'Login uses SIWE (Sign-In with Ethereum) protocol. Your wallet signature is your credential. We never store your private keys.'}
-            </p>
-          </div>
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 h-px" style={{ background: c.border }} />
+          <span className="text-[10px]" style={{ color: c.textFaint }}>
+            {lang === 'zh' ? '没有钱包？' : 'No wallet?'}
+          </span>
+          <div className="flex-1 h-px" style={{ background: c.border }} />
         </div>
 
-        {/* 返回首页 */}
+        <div className="space-y-3">
+          <a
+            href="https://metamask.io/download/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
+            style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#f6851b' }}>
+                <span className="text-white text-sm font-bold">M</span>
+              </div>
+              <div>
+                <div className="text-sm font-medium" style={{ color: c.text }}>MetaMask</div>
+                <div className="text-[10px]" style={{ color: c.textMuted }}>
+                  {lang === 'zh' ? '最流行的以太坊钱包' : 'Most popular Ethereum wallet'}
+                </div>
+              </div>
+            </div>
+            <span className="text-xs" style={{ color: c.goldSolid }}>
+              {lang === 'zh' ? '安装 →' : 'Install →'}
+            </span>
+          </a>
+
+          <a
+            href="https://www.rabby.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
+            style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#7b3fe4' }}>
+                <span className="text-white text-sm font-bold">R</span>
+              </div>
+              <div>
+                <div className="text-sm font-medium" style={{ color: c.text }}>Rabby Wallet</div>
+                <div className="text-[10px]" style={{ color: c.textMuted }}>
+                  {lang === 'zh' ? '安全易用的多链钱包' : 'Secure multi-chain wallet'}
+                </div>
+              </div>
+            </div>
+            <span className="text-xs" style={{ color: c.goldSolid }}>
+              {lang === 'zh' ? '安装 →' : 'Install →'}
+            </span>
+          </a>
+
+          <a
+            href="https://walletconnect.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between p-3 rounded-xl transition-all duration-200"
+            style={{ background: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)', border: `1px solid ${c.border}` }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#3b99fc' }}>
+                <span className="text-white text-sm font-bold">W</span>
+              </div>
+              <div>
+                <div className="text-sm font-medium" style={{ color: c.text }}>WalletConnect</div>
+                <div className="text-[10px]" style={{ color: c.textMuted }}>
+                  {lang === 'zh' ? '连接200+钱包的协议' : 'Connect 200+ wallets'}
+                </div>
+              </div>
+            </div>
+            <span className="text-xs" style={{ color: c.goldSolid }}>
+              {lang === 'zh' ? '了解 →' : 'Learn →'}
+            </span>
+          </a>
+        </div>
+
         <div className="text-center mt-4">
           <button
             onClick={() => router.push('/')}
@@ -305,6 +289,15 @@ function LoginPageInner() {
           </button>
         </div>
       </motion.div>
+
+      <div className="w-full max-w-md mx-auto pb-4">
+        <p className="text-[10px] leading-relaxed text-center" style={{ color: c.textFaint }}>
+          {lang === 'zh'
+            ? '登录使用 SIWE（Sign-In with Ethereum）协议，您的钱包签名即登录凭证，无需密码。我们不会存储您的私钥。'
+            : 'Login uses SIWE (Sign-In with Ethereum) protocol. Your wallet signature is your credential. We never store your private keys.'}
+        </p>
+      </div>
+
       <SiteFooter />
     </div>
   );

@@ -203,6 +203,13 @@ export default function HomePage() {
       {/* ══ 哲学引言 ══════════════════════════════════════ */}
       <section className="relative z-10 overflow-hidden min-h-[82svh] lg:min-h-[92vh] flex items-center" style={{ padding: '72px 24px' }}>
         <WeakBoundary line={c.navBorder} />
+        {/* 金色装饰边框 - 上下细线 */}
+        <div className="absolute top-16 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: '60%', maxWidth: '600px' }}>
+          <div className="h-px" style={{ background: `linear-gradient(to right, transparent, ${c.goldSolid}40, transparent)` }} />
+        </div>
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 pointer-events-none" style={{ width: '60%', maxWidth: '600px' }}>
+          <div className="h-px" style={{ background: `linear-gradient(to right, transparent, ${c.goldSolid}40, transparent)` }} />
+        </div>
         <div className="absolute inset-0"
           style={{
             background: theme === 'dark'
@@ -315,9 +322,15 @@ export default function HomePage() {
           <motion.button
             whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             onClick={() => requireLogin('/chart')}
-            className="px-14 py-4 font-semibold text-base tracking-widest rounded-full"
+            className="relative px-14 py-4 font-semibold text-base tracking-widest rounded-full"
             style={{ background: c.ctaBg, color: c.ctaText }}>
-                {t('home_free_chart', lang)}
+            <motion.span
+              className="absolute inset-0 rounded-full"
+              style={{ boxShadow: `0 0 40px ${c.goldSolid}60` }}
+              animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.08, 1] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <span className="relative">{t('home_free_chart', lang)}</span>
           </motion.button>
           <div className="mt-4 flex flex-wrap gap-3 justify-center">
             <motion.a
@@ -363,11 +376,14 @@ export default function HomePage() {
           <TempleSilhouette size={300} color={c.goldSolid} opacity={0.04} />
         </div>
         <div className="mx-auto" style={{ maxWidth: '1280px' }}>
-          <div className="rounded-2xl p-10 md:p-14 text-center relative overflow-hidden"
+          <motion.div
+            whileHover={{ y: -4 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            className="rounded-2xl p-10 md:p-14 text-center relative overflow-hidden"
             style={{
               background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.8)',
               border: `1px solid ${c.cardBorder}`,
-              boxShadow: c.cardShadow,
+              boxShadow: `${c.cardShadow}, inset 0 0 60px ${c.glowTint}`,
             }}>
             {/* 太极图装饰 */}
             <div className="absolute pointer-events-none" style={{ top: '10%', right: '8%' }}>
@@ -407,7 +423,7 @@ export default function HomePage() {
                 {t('home_start_heming', lang)}
               </motion.button>
             </FadeIn>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -439,7 +455,10 @@ export default function HomePage() {
                 <div className={i % 2 === 1 ? 'lg:col-start-2' : ''}>
                   <FadeIn delay={0}>
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                      <motion.div
+                        animate={{ boxShadow: [`${tool.accent}15`, `${tool.accent}30`, `${tool.accent}15`] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                        className="flex-shrink-0 w-10 h-4 rounded-xl flex items-center justify-center"
                         style={{ background: `${tool.accent}15`, border: `1px solid ${tool.accent}40` }}>
                         <svg width="20" height="20" viewBox="0 0 20 20">
                           {i === 0 && <circle cx="10" cy="10" r="8" fill="none" stroke={tool.accent} strokeWidth="1.5" />}
@@ -457,7 +476,7 @@ export default function HomePage() {
                           {i === 5 && <path d="M7 8 Q4 7 3 4" fill="none" stroke={tool.accent} strokeWidth="1" opacity="0.6" />}
                           {i === 5 && <path d="M13 8 Q16 7 17 4" fill="none" stroke={tool.accent} strokeWidth="1" opacity="0.6" />}
                         </svg>
-                      </div>
+                      </motion.div>
                       <div className="h-px w-8" style={{ background: c.goldLine }} />
                       <span className="text-[10px] tracking-[0.5em] uppercase" style={{ color: c.tagText }}>{t(tool.tagKey, lang)}</span>
                     </div>
@@ -483,7 +502,7 @@ export default function HomePage() {
                   </div>
                   <FadeIn delay={0.4}>
                     <motion.button
-                      whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.03, boxShadow: `0 0 24px ${tool.accent}40` }} whileTap={{ scale: 0.97 }}
                       onClick={() => router.push(tool.path)}
                       className="px-8 py-3 font-medium text-sm tracking-widest rounded-full"
                       style={{ background: `${tool.accent}15`, border: `1px solid ${tool.accent}40`, color: tool.accent }}>
@@ -493,10 +512,13 @@ export default function HomePage() {
                 </div>
                 <div className={i % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}>
                   <FadeIn delay={0.15}>
-                    <div className="relative rounded-2xl overflow-hidden p-8 md:p-12 flex items-center justify-center"
+                    <motion.div
+                      whileHover={{ y: -6, boxShadow: `0 12px 48px ${tool.accent}30, 0 4px 16px rgba(0,0,0,0.2)` }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className="relative rounded-2xl overflow-hidden p-8 md:p-12 flex items-center justify-center"
                       style={{ border: `1px solid ${c.featureBord}`, background: c.featureBg, minHeight: '400px', boxShadow: c.cardShadow }}>
                       <ToolDemo index={i} colors={c} accent={tool.accent} lang={lang} />
-                    </div>
+                    </motion.div>
                   </FadeIn>
                 </div>
               </div>

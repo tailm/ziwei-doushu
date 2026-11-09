@@ -108,14 +108,19 @@ body {
 }
 
 /* ─── 滚动条 ─────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: var(--bg-1); }
-::-webkit-scrollbar-thumb { background: var(--bdr-heavy); border-radius: 3px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ac-bdr); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ac); }
 
 /* ─── 选中文字 ───────────────────────────────────────────── */
 ::selection {
-  background: rgba(184,146,42,0.15);
+  background: rgba(184,146,42,0.20);
   color: var(--ac-dim);
+}
+[data-theme="dark"] ::selection {
+  background: rgba(212,168,67,0.25);
+  color: var(--ac);
 }
 
 /* ─── 工具类 ─────────────────────────────────────────────── */
@@ -136,16 +141,47 @@ body {
   border: 1px solid var(--bdr);
   border-radius: var(--r-md);
   box-shadow: var(--sh-sm);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+}
+.card:hover {
+  box-shadow: var(--sh-md);
+  border-color: var(--ac-bdr);
 }
 .card-flat {
   background: var(--bg-card);
   border: 1px solid var(--bdr);
   border-radius: var(--r-md);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.card-flat:hover {
+  border-color: var(--ac-bdr);
+  box-shadow: var(--sh-xs);
 }
 .card-tinted {
   background: var(--bg-1);
   border: 1px solid var(--bdr);
   border-radius: var(--r-md);
+  transition: border-color 0.3s ease;
+}
+.card-tinted:hover {
+  border-color: var(--ac-bdr);
+}
+
+/* 古籍卡片 */
+.book-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid rgba(184,146,42,0.2);
+  border-radius: 14px;
+  padding: 24px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(184,146,42,0.06);
+}
+.book-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(184,146,42,0.4);
+  box-shadow: 0 8px 24px rgba(184,146,42,0.15);
 }
 
 /* 深色区块 */

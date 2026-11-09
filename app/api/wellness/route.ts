@@ -5,6 +5,7 @@ import {
   createWellnessRecord,
   getWellnessRecords,
   getWellnessStreak,
+  getCheckinOverview,
   addCredits,
   logCredits,
 } from '@/lib/db';
@@ -95,6 +96,11 @@ export async function GET(req: NextRequest) {
   if (action === 'streak' && practiceType) {
     const streak = getWellnessStreak(user.id, practiceType);
     return NextResponse.json({ streak });
+  }
+
+  if (action === 'overview') {
+    const overview = getCheckinOverview(user.id);
+    return NextResponse.json({ overview });
   }
 
   const records = getWellnessRecords(user.id, practiceType);

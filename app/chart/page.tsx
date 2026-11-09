@@ -52,10 +52,12 @@ export default function ChartPage() {
       <>
         <NavigationBar />
         <main style={{ maxWidth: 720, margin: '0 auto', padding: '80px 20px 48px' }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>{t('chart_page_title', lang)}</h1>
-        <p style={{ color: '#888', marginBottom: 32, fontSize: 14, lineHeight: 1.7 }}>
-          {t('chart_page_desc', lang)}
-        </p>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 8 }}>{t('chart_page_title', lang)}</h1>
+          <p style={{ color: '#888', fontSize: 14, lineHeight: 1.7 }}>
+            {t('chart_page_desc', lang)}
+          </p>
+        </div>
         {permissions && permissions.credits !== undefined && (
           <div style={{ marginBottom: 16, padding: '8px 14px', borderRadius: 10, background: 'rgba(184,146,42,0.08)', border: '1px solid rgba(184,146,42,0.2)', fontSize: 13, color: 'var(--ac)' }}>
             {t('chart_credits_info', lang)}: {permissions.credits} · {t('chart_cost_20', lang)}
@@ -67,6 +69,7 @@ export default function ChartPage() {
     </div>
         )}
         <BirthForm onSubmit={handleChartGenerate} />
+        <ChartDisclaimer lang={lang} />
       </main>
       </>
     );
@@ -109,5 +112,25 @@ export default function ChartPage() {
     </main>
     <SiteFooter />
     </>
+  );
+}
+function ChartDisclaimer({ lang }: { lang: 'zh' | 'en' }) {
+  return (
+    <div style={{ marginTop: 40, textAlign: 'center' }}>
+      <p style={{ fontSize: 10, color: 'var(--tx-3)', lineHeight: 1.6, marginBottom: 6 }}>
+        {lang === 'zh'
+          ? '本平台基于中国传统文化研究，不构成医疗、投资、法律或重大决策建议'
+          : 'This platform is based on Chinese traditional culture research. It does not constitute medical, investment, legal, or major decision advice.'}
+      </p>
+      <p style={{ fontSize: 10 }}>
+        <a href="/terms" style={{ color: 'var(--tx-3)', textDecoration: 'underline' }}>
+          {lang === 'zh' ? '服务条款' : 'Terms of Service'}
+        </a>
+        {' · '}
+        <a href="/privacy" style={{ color: 'var(--tx-3)', textDecoration: 'underline' }}>
+          {lang === 'zh' ? '隐私政策' : 'Privacy Policy'}
+        </a>
+      </p>
+    </div>
   );
 }

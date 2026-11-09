@@ -37,24 +37,6 @@ interface RechargeHistoryItem {
   confirmed_at: number | null;
 }
 
-interface CreditsLogItem {
-  id: number;
-  user_id: number;
-  feature: string;
-  amount: number;
-  balance_after: number;
-  created_at: number;
-}
-
-const FEATURE_LABELS: Record<string, { zh: string; en: string }> = {
-  new_user_bonus: { zh: '新用户赠送', en: 'New User Bonus' },
-  recharge_bonus: { zh: '充值赠送', en: 'Recharge Bonus' },
-  chart: { zh: '起盘', en: 'Chart' },
-  heming: { zh: '合盘', en: 'Compatibility' },
-  ai_interpret: { zh: 'AI解盘', en: 'AI Reading' },
-  ai_qa: { zh: 'AI问答', en: 'AI Q&A' },
-  tip: { zh: '打赏', en: 'Tip' },
-};
 
 const CHAIN_HEX_IDS: Record<string, string> = {
   ethereum: '0x1',
@@ -92,7 +74,7 @@ export default function RechargePage() {
   const { lang } = useLang();
   const [walletInfo, setWalletInfo] = useState<WalletInfo | null>(null);
   const [rechargeHistory, setRechargeHistory] = useState<RechargeHistoryItem[]>([]);
-  const [creditsLog, setCreditsLog] = useState<CreditsLogItem[]>([]);
+
   const [selectedChain, setSelectedChain] = useState<string>('ethereum');
   const [selectedToken, setSelectedToken] = useState<string>('USDT');
   const [rechargeAmount, setRechargeAmount] = useState('');
@@ -127,17 +109,6 @@ export default function RechargePage() {
     }
   }, []);
 
-  const fetchCreditsLog = useCallback(async () => {
-    try {
-      const res = await fetch('/api/credits/log');
-      if (res.ok) {
-        const data = await res.json();
-        setCreditsLog(data.logs || []);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -146,9 +117,8 @@ export default function RechargePage() {
     if (user) {
       fetchWalletInfo();
       fetchRechargeHistory();
-      fetchCreditsLog();
     }
-  }, [user, loading, router, fetchWalletInfo, fetchRechargeHistory, fetchCreditsLog]);
+  }, [user, loading, router, fetchWalletInfo, fetchRechargeHistory]);
 
   if (loading) {
     return (
@@ -527,42 +497,7 @@ export default function RechargePage() {
     </div>
       )}
 
-      {creditsLog.length > 0 && (
-        <div className="rounded-xl p-6 mb-6" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
-          <h2 className="text-sm font-medium mb-4" style={{ color: 'var(--tx-1)' }}>{t('recharge_credits_log', lang)}</h2>
-          <div className="space-y-2">
-            {creditsLog.map(item => (
-              <div key={item.id} className="flex items-center justify-between p-3 rounded-lg" style={{ background: 'var(--bg-2)' }}>
-                <div className="flex items-center gap-3">
-                  <span
-                    className="text-[10px] px-2 py-1 rounded"
-                    style={{
-                      background: item.amount > 0 ? 'rgba(45,122,74,0.1)' : 'rgba(184,146,42,0.1)',
-                      color: item.amount > 0 ? '#2D7A4A' : 'var(--gold-solid)',
-                    }}
-                  >
-                    {FEATURE_LABELS[item.feature]?.[lang] || item.feature}
-                  </span>
-                  <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
-                    {new Date(item.created_at * 1000).toLocaleString(lang === 'zh' ? 'zh-CN' : 'en-US', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-    </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className="text-sm font-medium"
-                    style={{ color: item.amount > 0 ? '#2D7A4A' : 'var(--gold-solid)' }}
-                  >
-                    {item.amount > 0 ? `+${item.amount}` : item.amount}
-                  </span>
-                  <span className="text-[10px]" style={{ color: 'var(--tx-3)' }}>
-                    {t('recharge_balance', lang)} {item.balance_after}
-                  </span>
-    </div>
-    </div>
-            ))}
-    </div>
-    </div>
-      )}
+
       <SiteFooter />
     </div>
   );

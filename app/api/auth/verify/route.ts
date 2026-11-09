@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SiweMessage } from 'siwe';
-import { consumeNonce, createUser, createSession, logCredits, CREDITS_NEW_USER } from '@/lib/db';
+import { consumeNonce, createUser, createSession, logCredits, CREDITS_NEW_USER, isAdmin } from '@/lib/db';
 
 export const runtime = 'nodejs';
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         id: user.id,
         wallet_address: user.wallet_address,
         nickname: user.nickname,
-        membership_tier: user.membership_tier,
+        membership_tier: isAdmin(user.wallet_address) ? 'admin' : user.membership_tier,
         balance: user.balance,
         credits: user.credits,
       },

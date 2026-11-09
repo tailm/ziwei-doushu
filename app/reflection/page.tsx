@@ -216,7 +216,7 @@ export default function ReflectionPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="flex justify-center mb-6"
         >
-          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
+          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}`, boxShadow: `0 4px 24px rgba(0,0,0,0.15), inset 0 0 40px ${c.goldSolid}08` }}>
             <div className="text-center">
               <div className="text-3xl font-bold" style={{ color: c.goldSolid }}>{streak}</div>
               <div className="text-xs mt-1" style={{ color: c.textMuted }}>

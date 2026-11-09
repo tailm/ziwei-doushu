@@ -36,6 +36,7 @@ const BREATHING_PHASES = [
 ];
 
 
+
 function MeditationCircle({ color, isRunning }: { color: string; isRunning: boolean }) {
   return (
     <svg width={120} height={120} viewBox="0 0 120 120" fill="none">
@@ -231,15 +232,13 @@ export default function MeditationPage() {
       <NavigationBar />
       <div className="max-w-2xl mx-auto px-4 pt-20 pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <motion.div className="flex justify-center mb-2" animate={{ scale: [1, 1.08, 1] }} transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}>
-            <MeditationCircle color={c.blueAccent} isRunning={isRunning} />
-          </motion.div>
+
           <h1 className="text-2xl font-bold mb-2" style={{ color: c.blueAccent }}>{lang === 'zh' ? '打坐打卡' : 'Meditation Check-in'}</h1>
           <p className="text-sm" style={{ color: c.textMuted }}>{lang === 'zh' ? '静心定慧，养生延年' : 'Still the mind, cultivate wisdom and longevity'}</p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center mb-4">
-          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
+          <div className="flex items-center gap-4 px-6 py-4 rounded-2xl" style={{ background: c.cardBg, border: `1px solid ${c.border}`, boxShadow: `0 4px 24px rgba(0,0,0,0.15), inset 0 0 40px ${c.blueAccent}08` }}>
             <div className="text-center">
               <div className="text-3xl font-bold" style={{ color: c.blueAccent }}>{streak}</div>
               <div className="text-xs mt-1" style={{ color: c.textMuted }}>{lang === 'zh' ? '连续天数' : 'Day Streak'}</div>
@@ -287,24 +286,10 @@ export default function MeditationPage() {
     </div>
 
               {showBreathing && isRunning && (
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="rounded-xl p-6" style={{ background: c.cardBg, border: `1px solid ${c.blueAccent}40` }}>
-                  <div className="text-center">
-                    <motion.div
-                      className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
-                      style={{ background: `${c.blueAccent}20`, border: `2px solid ${c.blueAccent}` }}
-                      animate={{
-                        scale: breathPhase === 0 ? [1, 1.3, 1] : breathPhase === 2 ? [1.3, 1, 1] : 1.3,
-                      }}
-                      transition={{ duration: breathPhase === 0 ? 4 : breathPhase === 2 ? 6 : 2, ease: 'easeInOut' }}
-                    >
-                      <span className="text-sm font-medium" style={{ color: c.blueAccent }}>
-                        {lang === 'zh' ? BREATHING_PHASES[breathPhase].zh : BREATHING_PHASES[breathPhase].en}
-                      </span>
-                    </motion.div>
-                    <p className="text-xs mt-3" style={{ color: c.textMuted }}>
-                      {lang === 'zh' ? '跟随节奏，调整呼吸' : 'Follow the rhythm, adjust your breath'}
-                    </p>
-    </div>
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="rounded-xl p-6 text-center" style={{ background: c.cardBg, border: `1px solid ${c.blueAccent}40` }}>
+                  <p className="text-xs" style={{ color: c.textFaint }}>
+                    {lang === 'zh' ? '4秒吸气 → 2秒屏息 → 6秒呼气，循环往复，身心渐入静定' : '4s inhale → 2s hold → 6s exhale, repeat to enter stillness'}
+                  </p>
                 </motion.div>
               )}
 
