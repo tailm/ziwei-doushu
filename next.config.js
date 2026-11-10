@@ -2,6 +2,7 @@
 const nextConfig = {
   transpilePackages: ['lunar-javascript'],
   poweredByHeader: false,
+  allowedDevOrigins: ['192.168.50.242'],
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },

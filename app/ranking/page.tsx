@@ -22,7 +22,7 @@ const CATEGORY_LABELS: Record<string, { zh: string; en: string }> = {
   '命理': { zh: '命理推演', en: 'Destiny' },
   '占卜': { zh: '占卜问事', en: 'Divination' },
   '相术': { zh: '相术堪舆', en: 'Physiognomy' },
-  '打卡': { zh: '每日打卡', en: 'Daily Practice' },
+  '修行': { zh: '每日修行', en: 'Daily Practice' },
   '修持': { zh: '祈福修持', en: 'Rituals' },
   '知识': { zh: '知识学习', en: 'Knowledge' },
 };
@@ -32,7 +32,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   '占卜': '#60a5fa',
   '相C': '#f472b6',
   '相术': '#f472b6',
-  '打卡': '#2dd4bf',
+  '修行': '#2dd4bf',
   '修持': '#fb923c',
   '知识': '#a78bfa',
 };

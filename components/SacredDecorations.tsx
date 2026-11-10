@@ -73,7 +73,8 @@ export function BuddhaHalo({ size = 200, color = '#d4a843', opacity = 0.12, clas
       <circle cx="50" cy="50" r="45" fill={`url(#halo-glow-${size})`} />
       <motion.circle
         cx="50" cy="50" r="35" fill="none" stroke={color} strokeWidth="0.5"
-        animate={{ r: [35, 38, 35], opacity: [0.3, 0.5, 0.3] }}
+        animate={{ scale: [1, 1.08, 1], opacity: [0.3, 0.5, 0.3] }}
+        style={{ transformOrigin: '50px 50px' }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
       <circle cx="50" cy="50" r="28" fill="none" stroke={color} strokeWidth="0.3" opacity="0.4" />
@@ -207,15 +208,13 @@ export function IncenseSmoke({ size = 80, color = '#d4a843', opacity = 0.15, cla
           <motion.path
             key={i}
             d={`M${18 + i * 2} 40 Q${15 + i * 2} 30 ${20 + i * 2} 20 Q${25 + i * 2} 10 ${18 + i * 2} 2`}
-            fill="none" stroke={color} strokeWidth="0.4" opacity="0.4"
+            fill="none" stroke={color} strokeWidth="0.4"
             animate={{
-              d: [
-                `M${18 + i * 2} 40 Q${15 + i * 2} 30 ${20 + i * 2} 20 Q${25 + i * 2} 10 ${18 + i * 2} 2`,
-                `M${18 + i * 2} 40 Q${21 + i * 2} 30 ${16 + i * 2} 20 Q${23 + i * 2} 10 ${20 + i * 2} 2`,
-                `M${18 + i * 2} 40 Q${15 + i * 2} 30 ${20 + i * 2} 20 Q${25 + i * 2} 10 ${18 + i * 2} 2`,
-              ],
               opacity: [0.2, 0.5, 0.2],
+              scaleX: [1, 0.9, 1],
+              translateX: [0, 2, 0],
             }}
+            style={{ transformOrigin: 'center' }}
             transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.5, ease: 'easeInOut' }}
           />
         ))}
@@ -247,7 +246,8 @@ export function TempleBell({ size = 80, color = '#d4a843', opacity = 0.15, class
       </motion.g>
       <motion.circle
         cx="20" cy="20" r="18" fill="none" stroke={color} strokeWidth="0.3"
-        animate={{ r: [16, 20, 16], opacity: [0, 0.3, 0] }}
+        animate={{ scale: [0.89, 1.11, 0.89], opacity: [0, 0.3, 0] }}
+        style={{ transformOrigin: '20px 20px' }}
         transition={{ duration: 2, repeat: Infinity, repeatDelay: 3, ease: 'easeOut' }}
       />
     </svg>
@@ -469,13 +469,10 @@ export function SacredFlame({ size = 40, color = '#d4a843', opacity = 0.2, class
         d="M10 5 Q6 10 8 16 Q10 20 10 22 Q10 20 12 16 Q14 10 10 5 Z"
         fill={color} fillOpacity="0.2"
         animate={{
-          d: [
-            'M10 5 Q6 10 8 16 Q10 20 10 22 Q10 20 12 16 Q14 10 10 5 Z',
-            'M10 5 Q7 10 9 16 Q10 19 10 22 Q10 19 11 16 Q13 10 10 5 Z',
-            'M10 5 Q6 10 8 16 Q10 20 10 22 Q10 20 12 16 Q14 10 10 5 Z',
-          ],
           scale: [1, 1.05, 1],
+          opacity: [0.2, 0.35, 0.2],
         }}
+        style={{ transformOrigin: 'center' }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.path

@@ -461,7 +461,7 @@ export default function AdminPage() {
           <div className="text-lg font-bold" style={{ color: stats.pendingRecharges > 0 ? 'var(--gold-solid)' : 'var(--tx-1)' }}>{stats.pendingRecharges}</div>
         </div>
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
-          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总打卡次数</div>
+          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总修行次数</div>
           <div className="text-lg font-bold" style={{ color: 'var(--gold-solid)' }}>{stats.totalCheckins}</div>
         </div>
         <div className="rounded-lg p-3" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
@@ -513,7 +513,7 @@ export default function AdminPage() {
             color: tab === 'checkins' ? 'var(--gold-solid)' : 'var(--tx-2)',
           }}
         >
-          打卡记录
+          修行记录
         </button>
         <button
           onClick={() => setTab('prayers')}
@@ -561,7 +561,7 @@ export default function AdminPage() {
                   <th className="text-left py-2 px-2" style={{ color: 'var(--tx-3)' }}>昵称</th>
                   <th className="text-left py-2 px-2" style={{ color: 'var(--tx-3)' }}>等级</th>
                   <th className="text-right py-2 px-2" style={{ color: 'var(--tx-3)' }}>余额</th>
-                  <th className="text-right py-2 px-2" style={{ color: 'var(--tx-3)' }}>打卡</th>
+                  <th className="text-right py-2 px-2" style={{ color: 'var(--tx-3)' }}>修行</th>
                   <th className="text-right py-2 px-2" style={{ color: 'var(--tx-3)' }}>积分变动</th>
                   <th className="text-left py-2 px-2" style={{ color: 'var(--tx-3)' }}>注册时间</th>
                   <th className="text-center py-2 px-2" style={{ color: 'var(--tx-3)' }}>操作</th>
@@ -954,7 +954,7 @@ export default function AdminPage() {
           </div>
 
           {filteredCheckins.length === 0 && (
-            <div className="text-center py-8 text-xs" style={{ color: 'var(--tx-3)' }}>暂无打卡记录</div>
+            <div className="text-center py-8 text-xs" style={{ color: 'var(--tx-3)' }}>暂无修行记录</div>
           )}
         </div>
       )}
@@ -1223,14 +1223,14 @@ export default function AdminPage() {
                   <>
                   {totalEditCheckins > 0 && (
                     <div className="mb-4">
-                      <div className="text-xs font-bold mb-2" style={{ color: 'var(--tx-1)' }}>打卡统计</div>
+                      <div className="text-xs font-bold mb-2" style={{ color: 'var(--tx-1)' }}>修行统计</div>
                       <div className="grid grid-cols-3 gap-2 mb-2">
                         <div className="rounded-lg p-2 text-center" style={{ background: 'var(--bg-2)' }}>
-                          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总打卡次数</div>
+                          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>总修行次数</div>
                           <div className="text-xs font-bold" style={{ color: 'var(--gold-solid)' }}>{totalEditCheckins}</div>
                         </div>
                         <div className="rounded-lg p-2 text-center" style={{ background: 'var(--bg-2)' }}>
-                          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>打卡类型数</div>
+                          <div className="text-[10px]" style={{ color: 'var(--tx-3)' }}>修行类型数</div>
                           <div className="text-xs font-bold" style={{ color: 'var(--tx-1)' }}>
                             {Object.values(editCheckinByType).filter(v => v > 0).length}
                           </div>
@@ -1388,7 +1388,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="rounded-xl p-4" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
-                    <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--tx-1)' }}>打卡次数趋势（近30天）</h3>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--tx-1)' }}>修行次数趋势（近30天）</h3>
                     <LineChart
                       data={statsData.checkin_trend_30d}
                       color="#60a5fa"
@@ -1397,7 +1397,7 @@ export default function AdminPage() {
                   </div>
 
                   <div className="rounded-xl p-4" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
-                    <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--tx-1)' }}>各打卡项目统计</h3>
+                    <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--tx-1)' }}>各修行项目统计</h3>
                     <div className="space-y-2">
                       {statsData.checkin_by_type.map(item => {
                         const maxTotal = Math.max(...statsData.checkin_by_type.map(c => c.total), 1);

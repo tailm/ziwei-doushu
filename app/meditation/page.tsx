@@ -233,7 +233,7 @@ export default function MeditationPage() {
       <div className="max-w-2xl mx-auto px-4 pt-20 pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
 
-          <h1 className="text-2xl font-bold mb-2" style={{ color: c.blueAccent }}>{lang === 'zh' ? '打坐打卡' : 'Meditation Check-in'}</h1>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: c.blueAccent }}>{lang === 'zh' ? '打坐修行' : 'Meditation Check-in'}</h1>
           <p className="text-sm" style={{ color: c.textMuted }}>{lang === 'zh' ? '静心定慧，养生延年' : 'Still the mind, cultivate wisdom and longevity'}</p>
         </motion.div>
 
@@ -254,7 +254,7 @@ export default function MeditationPage() {
         </motion.div>
 
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-4 text-xs" style={{ color: c.textFaint }}>{lang === 'zh' ? '每日打卡 +2积分' : 'Daily check-in +2 credits'}</motion.div>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-4 text-xs" style={{ color: c.textFaint }}>{lang === 'zh' ? '每日修行 +2积分' : 'Daily check-in +2 credits'}</motion.div>
 
         <AnimatePresence mode="wait">
           {showSuccess ? (
@@ -265,7 +265,7 @@ export default function MeditationPage() {
                   <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M8 20L16 28L32 12" stroke={c.blueAccent} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </motion.div>
               </motion.div>
-              <motion.p className="mt-8 text-lg font-medium" style={{ color: c.blueAccent }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>{lang === 'zh' ? '打卡成功！' : 'Check-in Successful!'}</motion.p>
+              <motion.p className="mt-8 text-lg font-medium" style={{ color: c.blueAccent }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>{lang === 'zh' ? '修行完成！' : 'Check-in Successful!'}</motion.p>
               {creditsAwarded > 0 && <motion.p className="mt-2 text-sm font-medium" style={{ color: c.blueAccent }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>{lang === 'zh' ? `获得 ${creditsAwarded} 积分` : `+${creditsAwarded} credits`}</motion.p>}
               <motion.p className="mt-2 text-sm" style={{ color: c.textMuted }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>{lang === 'zh' ? `已连续打坐 ${streak} 天` : `${streak} day streak`}</motion.p>
               <motion.p className="mt-1 text-xs" style={{ color: c.textFaint }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>{lang === 'zh' ? '静定生慧，心安自在' : 'Stillness breeds wisdom, peace within'}</motion.p>
@@ -382,19 +382,19 @@ export default function MeditationPage() {
 
               <div className="flex justify-center gap-3">
                 <motion.button whileHover={{ scale: completed ? 1.03 : 1 }} whileTap={{ scale: completed ? 0.97 : 1 }} onClick={handleCheckIn} disabled={!completed || !user} className="px-10 py-3 rounded-xl font-medium" style={{ background: completed && user ? c.blueAccent : c.border, color: '#1a1a2e', cursor: completed && user ? 'pointer' : 'not-allowed' }}>
-                  {lang === 'zh' ? '打卡打坐' : 'Check In'}
+                  {lang === 'zh' ? '开始修行' : 'Check In'}
                 </motion.button>
                 {user && (
-                  <button onClick={() => setShowHistory(!showHistory)} className="px-4 py-3 rounded-xl text-sm" style={{ background: c.cardBg, border: `1px solid ${c.border}`, color: c.textMuted }}>{lang === 'zh' ? '打卡记录' : 'History'}</button>
+                  <button onClick={() => setShowHistory(!showHistory)} className="px-4 py-3 rounded-xl text-sm" style={{ background: c.cardBg, border: `1px solid ${c.border}`, color: c.textMuted }}>{lang === 'zh' ? '修行记录' : 'History'}</button>
                 )}
     </div>
 
               {!completed && selectedDuration > 0 && <p className="text-center text-xs" style={{ color: c.textFaint }}>{lang === 'zh' ? '请先完成打坐计时' : 'Please complete meditation timer first'}</p>}
-              {!user && <p className="text-center text-xs" style={{ color: c.textFaint }}>{lang === 'zh' ? '登录后可记录打卡数据' : 'Sign in to track your progress'}</p>}
+              {!user && <p className="text-center text-xs" style={{ color: c.textFaint }}>{lang === 'zh' ? '登录后可记录修行数据' : 'Sign in to track your progress'}</p>}
 
               {showHistory && records.length > 0 && (
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2">
-                  <h3 className="text-sm font-medium" style={{ color: c.blueAccent }}>{lang === 'zh' ? '近期打卡' : 'Recent Check-ins'}</h3>
+                  <h3 className="text-sm font-medium" style={{ color: c.blueAccent }}>{lang === 'zh' ? '近期修行' : 'Recent Check-ins'}</h3>
                   {records.slice(0, 10).map((r, i) => (
                     <div key={i} className="flex items-center justify-between p-3 rounded-lg text-sm" style={{ background: c.cardBg, border: `1px solid ${c.border}` }}>
                       <span style={{ color: c.text }}>{r.duration_minutes} {lang === 'zh' ? '分钟' : 'min'}</span>

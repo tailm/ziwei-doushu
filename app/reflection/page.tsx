@@ -89,7 +89,8 @@ function ReflectionLantern({ color, size = 60 }: { color: string; size?: number 
           r="4"
           fill={color}
           opacity="0.6"
-          animate={{ opacity: [0.4, 0.8, 0.4], r: [3, 5, 3] }}
+          animate={{ opacity: [0.4, 0.8, 0.4], scale: [0.75, 1.25, 0.75] }}
+          style={{ transformOrigin: '30px 30px' }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.g>
@@ -247,7 +248,7 @@ export default function ReflectionPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-4 text-xs" style={{ color: c.textFaint }}>
-          {lang === 'zh' ? '每日打卡 +2积分' : 'Daily check-in +2 credits'}
+          {lang === 'zh' ? '每日修行 +2积分' : 'Daily check-in +2 credits'}
         </motion.div>
 
         <AnimatePresence mode="wait">
@@ -284,7 +285,7 @@ export default function ReflectionPage() {
               </motion.div>
 
               <motion.p className="mt-8 text-lg font-medium" style={{ color: c.goldSolid }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-                {lang === 'zh' ? '三省打卡成功！' : 'Reflection Complete!'}
+                {lang === 'zh' ? '三省修行完成！' : 'Reflection Complete!'}
               </motion.p>
               {creditsAwarded > 0 && (
                 <motion.p className="mt-2 text-sm font-medium" style={{ color: c.goldSolid }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}>
@@ -292,7 +293,7 @@ export default function ReflectionPage() {
                 </motion.p>
               )}
               <motion.p className="mt-2 text-sm" style={{ color: c.textMuted }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}>
-                {lang === 'zh' ? `已连续打卡 ${streak} 天` : `${streak} day streak`}
+                {lang === 'zh' ? `已连续修行 ${streak} 天` : `${streak} day streak`}
               </motion.p>
               <motion.p className="mt-1 text-xs" style={{ color: c.textFaint }} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
                 {lang === 'zh' ? '日日反省，日日精进' : 'Reflect daily, improve daily'}
@@ -327,7 +328,7 @@ export default function ReflectionPage() {
               >
                 <p className="text-sm" style={{ color: currentSession.color }}>
                   {lang === 'zh'
-                    ? `${currentSession.zh}建议时间 ${currentSession.timeRange}，随时皆可打卡`
+                    ? `${currentSession.zh}建议时间 ${currentSession.timeRange}，随时皆可修行`
                     : `${currentSession.en} suggested time ${currentSession.timeRange}, check-in anytime`}
                 </p>
               </motion.div>
@@ -373,7 +374,7 @@ export default function ReflectionPage() {
                       className="text-xs"
                       style={{ color: currentSession.color }}
                     >
-                      {lang === 'zh' ? '内容已就绪，可以打卡' : 'Ready to check in'}
+                      {lang === 'zh' ? '内容已就绪，可以修行' : 'Ready to check in'}
                     </motion.span>
                   )}
     </div>
@@ -418,7 +419,7 @@ export default function ReflectionPage() {
                     cursor: canCheckIn ? 'pointer' : 'not-allowed',
                   }}
                 >
-                  {lang === 'zh' ? '打卡三省' : 'Check In'}
+                  {lang === 'zh' ? '开始修行' : 'Check In'}
                 </motion.button>
                 {user && (
                   <button
@@ -426,14 +427,14 @@ export default function ReflectionPage() {
                     className="px-4 py-3 rounded-xl text-sm"
                     style={{ background: c.cardBg, border: `1px solid ${c.border}`, color: c.textMuted }}
                   >
-                    {lang === 'zh' ? '打卡记录' : 'History'}
+                    {lang === 'zh' ? '修行记录' : 'History'}
                   </button>
                 )}
     </div>
 
               {!user && (
                 <p className="text-center text-xs" style={{ color: c.textFaint }}>
-                  {lang === 'zh' ? '登录后可记录打卡数据' : 'Sign in to track your progress'}
+                  {lang === 'zh' ? '登录后可记录修行数据' : 'Sign in to track your progress'}
                 </p>
               )}
 

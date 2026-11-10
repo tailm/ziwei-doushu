@@ -5,6 +5,8 @@ export const T = {
   nav_brand: { zh: '紫微命盘', en: 'Ziwei Chart' },
   nav_home: { zh: '首页', en: 'Home' },
   nav_library: { zh: '古籍', en: 'Classics' },
+  nav_heritage: { zh: '非遗', en: 'Heritage' },
+  nav_cuisine: { zh: '中餐', en: 'Cuisine' },
   nav_about: { zh: '关于', en: 'About' },
   nav_fengshui: { zh: '风水', en: 'Feng Shui' },
   nav_heming: { zh: '合盘', en: 'Compatibility' },
@@ -487,6 +489,22 @@ export const T = {
   home_footer_line2: { zh: '本平台基于中国传统文化研究，不构成医疗、投资、法律或重大决策建议', en: 'This platform is based on Chinese traditional culture research. It does not constitute medical, investment, legal, or major decision advice.' },
   home_footer_terms: { zh: '服务条款', en: 'Terms of Service' },
   home_footer_privacy: { zh: '隐私政策', en: 'Privacy Policy' },
+
+  // ── AI 解惑助手 ──
+  ai_assistant_title: { zh: 'AI 解惑', en: 'AI Assistant' },
+  ai_assistant_subtitle: { zh: '紫微斗数 · 传统文化', en: 'Ziwei · Traditional Culture' },
+  ai_assistant_greeting: { zh: '有什么可以帮你的？', en: 'How can I help you?' },
+  ai_assistant_placeholder: { zh: '输入你的问题...', en: 'Type your question...' },
+  ai_assistant_send: { zh: '发送', en: 'Send' },
+  ai_assistant_q1: { zh: '紫微斗数是什么？', en: 'What is Ziwei Dou Shu?' },
+  ai_assistant_q2: { zh: '十四主星有哪些？', en: 'What are the 14 Main Stars?' },
+  ai_assistant_q3: { zh: '什么是四化？', en: 'What are the Four Transformations?' },
+  ai_assistant_q4: { zh: '如何看大限运势？', en: 'How to read Decade fortune?' },
+  ai_assistant_q5: { zh: '倪海厦紫微体系有何特点？', en: 'What is the Ni Haixia lineage?' },
+  ai_assistant_err_login: { zh: '请先登录后使用 AI 解惑', en: 'Please login first' },
+  ai_assistant_err_credits: { zh: '积分不足，AI 解惑每次需要 10 积分', en: 'Insufficient credits. AI Q&A costs 10 credits.' },
+  ai_assistant_err_network: { zh: '网络错误，请稍后重试', en: 'Network error. Please try again.' },
+  ai_assistant_err_failed: { zh: '请求失败，请稍后重试', en: 'Request failed. Please try again.' },
 
   // ── 四化简介 ──
   home_sihua_lu_attr: { zh: '吉化·增益', en: 'Auspicious · Gain' },

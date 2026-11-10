@@ -67,9 +67,9 @@ const FEATURE_LABELS: Record<string, { zh: string; en: string }> = {
   ai_interpret: { zh: 'AI解盘', en: 'AI Reading' },
   ai_qa: { zh: 'AI问答', en: 'AI Q&A' },
   tip: { zh: '打赏', en: 'Tip' },
-  wellness_taichi: { zh: '太极打卡', en: 'Tai Chi Check-in' },
-  wellness_vegetarian: { zh: '吃斋打卡', en: 'Vegetarian Check-in' },
-  wellness_meditation: { zh: '打坐打卡', en: 'Meditation Check-in' },
+  wellness_taichi: { zh: '太极修行', en: 'Tai Chi Check-in' },
+  wellness_vegetarian: { zh: '吃斋修行', en: 'Vegetarian Check-in' },
+  wellness_meditation: { zh: '打坐修行', en: 'Meditation Check-in' },
   wellness_reflection: { zh: '每日三省', en: 'Daily Reflection' },
   wellness_charity: { zh: '积德行善', en: 'Charity Check-in' },
   recitation_morning: { zh: '晨间诵经', en: 'Morning Recitation' },
@@ -94,7 +94,7 @@ function PracticeBarChart({ overview, lang }: { overview: CheckinOverview; lang:
 
   return (
     <div className="mt-4">
-      <div className="text-xs mb-2" style={{ color: 'var(--tx-2)' }}>{lang === 'zh' ? '各项目打卡次数' : 'Check-ins by Practice'}</div>
+      <div className="text-xs mb-2" style={{ color: 'var(--tx-2)' }}>{lang === 'zh' ? '各项目修行次数' : 'Check-ins by Practice'}</div>
       <div className="flex items-end justify-center" style={{ height: chartHeight + 40, gap: `${gap}px` }}>
         {entries.map(([key, label], i) => {
           const count = overview.stats.by_type[key] || 0;
@@ -234,7 +234,7 @@ function PracticeMonthCalendar({ calendar, lang }: { calendar: CheckinCalendarDa
         ))}
       </div>
       <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-        <span className="text-[8px]" style={{ color: 'var(--tx-3)' }}>{lang === 'zh' ? '打卡项' : 'Types:'}</span>
+        <span className="text-[8px]" style={{ color: 'var(--tx-3)' }}>{lang === 'zh' ? '修行项' : 'Types:'}</span>
         {Object.entries(PRACTICE_LABELS).map(([key, label]) => (
           <div key={key} className="flex items-center gap-0.5">
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: label.color }} />
@@ -357,22 +357,22 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* 修行打卡总览 */}
+      {/* 修行总览 */}
       {overview && (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl p-6 mb-6" style={{ background: 'var(--bg-1)', border: '1px solid var(--bdr)' }}>
-          <h2 className="text-sm font-medium mb-4" style={{ color: 'var(--tx-1)' }}>{lang === 'zh' ? '修行打卡总览' : 'Practice Overview'}</h2>
+          <h2 className="text-sm font-medium mb-4" style={{ color: 'var(--tx-1)' }}>{lang === 'zh' ? '修行总览' : 'Practice Overview'}</h2>
 
           {overview.stats.total_checkins === 0 ? (
             <div className="text-center py-8">
               <div className="text-3xl mb-2">🧘</div>
-              <p className="text-sm" style={{ color: 'var(--tx-2)' }}>{lang === 'zh' ? '尚未开始打卡修行' : 'No practice check-ins yet'}</p>
-              <p className="text-xs mt-1" style={{ color: 'var(--tx-3)' }}>{lang === 'zh' ? '完成每日打卡，记录修行历程' : 'Start daily check-ins to track your practice'}</p>
+              <p className="text-sm" style={{ color: 'var(--tx-2)' }}>{lang === 'zh' ? '尚未开始修行' : 'No practice check-ins yet'}</p>
+              <p className="text-xs mt-1" style={{ color: 'var(--tx-3)' }}>{lang === 'zh' ? '完成每日修行，记录修行历程' : 'Start daily check-ins to track your practice'}</p>
               <button
                 onClick={() => router.push('/recitation')}
                 className="mt-4 px-4 py-2 rounded-lg text-xs"
                 style={{ background: 'rgba(184,146,42,0.15)', color: 'var(--ac)', border: '1px solid rgba(184,146,42,0.25)' }}
               >
-                {lang === 'zh' ? '开始打卡' : 'Start Now'}
+                {lang === 'zh' ? '开始修行' : 'Start Now'}
               </button>
             </div>
           ) : (

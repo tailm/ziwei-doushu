@@ -135,15 +135,11 @@ export default function AnnouncementModal() {
               color: '#5a4a30',
               flex: 1,
             }}>
-              <p style={{ margin: '0 0 12px' }}>
-                说实话，我真的没想到会有这么大的流量。
-              </p>
+              
               <p style={{ margin: '0 0 12px' }}>
                 最开始做这个平台，我的初心其实很简单：在 AI 时代，把倪师这套原本复杂、门槛很高的体系，尽量做得更简单、更高效、更容易理解。
               </p>
-              <p style={{ margin: '0 0 12px' }}>
-                不一定每个人都要先学很久、看很多书，才能接触这些内容。我们希望通过这个平台，让大家用更轻松的方式，获得一些对自我、人生阶段、选择方向的参考和启发。
-              </p>
+              
               <p style={{
                 margin: '0 0 12px',
                 padding: '10px 14px',
@@ -158,12 +154,7 @@ export default function AnnouncementModal() {
               <p style={{ margin: '0 0 12px' }}>
                 我一直觉得，易经如此，紫微斗数也是如此。它们真正有价值的地方，不是让人被某个结果困住，而是让我们更早看见自己的性格惯性、人生课题和选择方向。看见之后，才有机会调整；理解之后，才有机会变得更好。
               </p>
-              <p style={{ margin: '0 0 12px' }}>
-                至于那些说&ldquo;你当下在看这些，其实也是命运的一部分&rdquo;之类的话，我就不多评价了。
-              </p>
-              <p style={{ margin: '0 0 12px' }}>
-                这几天账号被小红书抬走了，<strong style={{ color: '#c45a2d' }}>5 月 3 号开始恢复正常更新。</strong>
-              </p>
+              
               <p style={{ margin: '0 0 16px', color: '#3d2f10', fontWeight: 500 }}>
                 最后，真心祝愿大家都能越来越了解自己，越来越爱自己，也越来越有能力爱身边的人。
               </p>

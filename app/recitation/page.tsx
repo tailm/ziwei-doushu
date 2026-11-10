@@ -221,7 +221,7 @@ export default function RecitationPage() {
       <div className="max-w-3xl mx-auto px-4 pt-20 pb-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
           <h1 className="text-2xl font-bold mb-2" style={{ color: c.goldSolid }}>
-            {lang === 'zh' ? '每日诵经打卡' : 'Daily Recitation'}
+            {lang === 'zh' ? '每日诵经修行' : 'Daily Recitation'}
           </h1>
           <p className="text-sm" style={{ color: c.textMuted }}>
             {lang === 'zh' ? '晨钟暮鼓，精进修行，持之以恒' : 'Morning bell, evening drum, practice with perseverance'}
@@ -298,7 +298,7 @@ export default function RecitationPage() {
           style={{ color: c.textFaint }}
         >
           {lang === 'zh'
-            ? '每日打卡 +2积分'
+            ? '每日修行 +2积分'
             : 'Daily check-in +2 credits'}
         </motion.div>
 
@@ -358,7 +358,7 @@ export default function RecitationPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                {lang === 'zh' ? '打卡成功！' : 'Check-in Successful!'}
+                {lang === 'zh' ? '修行完成！' : 'Check-in Successful!'}
               </motion.p>
               {creditsAwarded > 0 && (
                 <motion.p
@@ -378,7 +378,7 @@ export default function RecitationPage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1 }}
               >
-                {lang === 'zh' ? `已连续打卡 ${streak} 天` : `${streak} day streak`}
+                {lang === 'zh' ? `已连续修行 ${streak} 天` : `${streak} day streak`}
               </motion.p>
               <motion.p
                 className="mt-1 text-xs"
@@ -432,7 +432,7 @@ export default function RecitationPage() {
               >
                 <p className="text-sm" style={{ color: c.goldSolid }}>
                   {lang === 'zh'
-                    ? `${activeTab === 'morning' ? '早课' : '晚课'}建议时间 ${getSessionTimeRange(activeTab)}，随时皆可打卡`
+                    ? `${activeTab === 'morning' ? '早课' : '晚课'}建议时间 ${getSessionTimeRange(activeTab)}，随时皆可修行`
                     : `${activeTab === 'morning' ? 'Morning' : 'Evening'} suggested time ${getSessionTimeRange(activeTab)}, check-in anytime`}
                 </p>
               </motion.div>
@@ -607,7 +607,7 @@ export default function RecitationPage() {
                       className="mt-3 text-center text-sm"
                       style={{ color: c.goldSolid }}
                     >
-                      {lang === 'zh' ? '诵经已完成，可以打卡了' : 'Recitation completed, ready to check in'}
+                      {lang === 'zh' ? '诵经已完成，可以修行了' : 'Recitation completed, ready to check in'}
                     </motion.div>
                   )}
                 </motion.div>
@@ -626,7 +626,7 @@ export default function RecitationPage() {
                     cursor: canCheckIn ? 'pointer' : 'not-allowed',
                   }}
                 >
-                  {lang === 'zh' ? '打卡诵经' : 'Check In'}
+                  {lang === 'zh' ? '开始修行' : 'Check In'}
                 </motion.button>
                 {user && (
                   <button
@@ -634,7 +634,7 @@ export default function RecitationPage() {
                     className="px-4 py-3 rounded-xl text-sm"
                     style={{ background: c.cardBg, border: `1px solid ${c.border}`, color: c.textMuted }}
                   >
-                    {lang === 'zh' ? '打卡记录' : 'History'}
+                    {lang === 'zh' ? '修行记录' : 'History'}
                   </button>
                 )}
     </div>
@@ -650,7 +650,7 @@ export default function RecitationPage() {
 
               {!user && (
                 <p className="text-center text-xs" style={{ color: c.textFaint }}>
-                  {lang === 'zh' ? '登录后可记录打卡数据' : 'Sign in to track your progress'}
+                  {lang === 'zh' ? '登录后可记录修行数据' : 'Sign in to track your progress'}
                 </p>
               )}
 
@@ -661,7 +661,7 @@ export default function RecitationPage() {
                   className="space-y-2"
                 >
                   <h3 className="text-sm font-medium" style={{ color: c.goldSolid }}>
-                    {lang === 'zh' ? '近期打卡' : 'Recent Check-ins'}
+                    {lang === 'zh' ? '近期修行' : 'Recent Check-ins'}
                   </h3>
                   {records.slice(0, 10).map((r, i) => (
                     <div

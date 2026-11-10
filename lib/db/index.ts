@@ -677,14 +677,14 @@ export interface CheckinOverview {
 }
 
 const ACHIEVEMENT_DEFS = [
-  { key: 'first_step', title_zh: '初入道门', title_en: 'First Step', desc_zh: '完成首次打卡', desc_en: 'Complete your first check-in', target: 1, icon: '🌟' },
-  { key: 'seven_days', title_zh: '七日不辍', title_en: 'Seven Days', desc_zh: '连续打卡7天', desc_en: '7-day streak', target: 7, icon: '🔥' },
-  { key: 'thirty_days', title_zh: '三十日修行', title_en: 'Thirty Days', desc_zh: '连续打卡30天', desc_en: '30-day streak', target: 30, icon: '⚡' },
-  { key: 'hundred_days', title_zh: '百日筑基', title_en: 'Hundred Days', desc_zh: '连续打卡100天', desc_en: '100-day streak', target: 100, icon: '🏔' },
-  { key: 'all_six', title_zh: '六根清净', title_en: 'All Six', desc_zh: '同日完成全部6项打卡', desc_en: 'Complete all 6 check-ins in one day', target: 6, icon: '☯' },
-  { key: 'total_50', title_zh: '半百之勤', title_en: 'Fifty Check-ins', desc_zh: '累计打卡50次', desc_en: '50 total check-ins', target: 50, icon: '📖' },
-  { key: 'total_200', title_zh: '二百精进', title_en: 'Two Hundred', desc_zh: '累计打卡200次', desc_en: '200 total check-ins', target: 200, icon: '🪷' },
-  { key: 'total_500', title_zh: '五百圆满', title_en: 'Five Hundred', desc_zh: '累计打卡500次', desc_en: '500 total check-ins', target: 500, icon: '🙏' },
+  { key: 'first_step', title_zh: '初入道门', title_en: 'First Step', desc_zh: '完成首次修行', desc_en: 'Complete your first check-in', target: 1, icon: '🌟' },
+  { key: 'seven_days', title_zh: '七日不辍', title_en: 'Seven Days', desc_zh: '连续修行7天', desc_en: '7-day streak', target: 7, icon: '🔥' },
+  { key: 'thirty_days', title_zh: '三十日修行', title_en: 'Thirty Days', desc_zh: '连续修行30天', desc_en: '30-day streak', target: 30, icon: '⚡' },
+  { key: 'hundred_days', title_zh: '百日筑基', title_en: 'Hundred Days', desc_zh: '连续修行100天', desc_en: '100-day streak', target: 100, icon: '🏔' },
+  { key: 'all_six', title_zh: '六根清净', title_en: 'All Six', desc_zh: '同日完成全部6项修行', desc_en: 'Complete all 6 check-ins in one day', target: 6, icon: '☯' },
+  { key: 'total_50', title_zh: '半百之勤', title_en: 'Fifty Check-ins', desc_zh: '累计修行50次', desc_en: '50 total check-ins', target: 50, icon: '📖' },
+  { key: 'total_200', title_zh: '二百精进', title_en: 'Two Hundred', desc_zh: '累计修行200次', desc_en: '200 total check-ins', target: 200, icon: '🪷' },
+  { key: 'total_500', title_zh: '五百圆满', title_en: 'Five Hundred', desc_zh: '累计修行500次', desc_en: '500 total check-ins', target: 500, icon: '🙏' },
 ];
 
 export function getCheckinOverview(userId: number): CheckinOverview {
@@ -820,12 +820,12 @@ const FEATURE_META: Record<string, { zh: string; en: string; icon: string; path:
   fengshui: { zh: '风水分析', en: 'Feng Shui', icon: '🏠', path: '/fengshui', category: '相术' },
   library: { zh: '古籍库', en: 'Classics', icon: '📖', path: '/library', category: '知识' },
   knowledge: { zh: '知识库', en: 'Knowledge', icon: '📚', path: '/knowledge', category: '知识' },
-  recitation: { zh: '诵经打卡', en: 'Recitation', icon: '🔔', path: '/recitation', category: '打卡' },
-  vegetarian: { zh: '吃斋打卡', en: 'Vegetarian', icon: '🥬', path: '/vegetarian', category: '打卡' },
-  meditation: { zh: '打坐打卡', en: 'Meditation', icon: '🧘', path: '/meditation', category: '打卡' },
-  reflection: { zh: '每日三省', en: 'Reflection', icon: '🔍', path: '/reflection', category: '打卡' },
-  taichi: { zh: '太极打卡', en: 'Tai Chi', icon: '☯', path: '/taichi', category: '打卡' },
-  charity: { zh: '积德行善', en: 'Charity', icon: '🤝', path: '/charity', category: '打卡' },
+  recitation: { zh: '诵经修行', en: 'Recitation', icon: '🔔', path: '/recitation', category: '修行' },
+  vegetarian: { zh: '吃斋修行', en: 'Vegetarian', icon: '🥬', path: '/vegetarian', category: '修行' },
+  meditation: { zh: '打坐修行', en: 'Meditation', icon: '🧘', path: '/meditation', category: '修行' },
+  reflection: { zh: '每日三省', en: 'Reflection', icon: '🔍', path: '/reflection', category: '修行' },
+  taichi: { zh: '太极修行', en: 'Tai Chi', icon: '☯', path: '/taichi', category: '修行' },
+  charity: { zh: '积德行善', en: 'Charity', icon: '🤝', path: '/charity', category: '修行' },
   prayer: { zh: '祈福', en: 'Prayer', icon: '🙏', path: '/prayer', category: '修持' },
   wish: { zh: '许愿', en: 'Wish', icon: '🌠', path: '/wish', category: '修持' },
   repent: { zh: '忏悔', en: 'Repentance', icon: '💧', path: '/repent', category: '修持' },

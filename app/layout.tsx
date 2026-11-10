@@ -9,14 +9,16 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { SITE_URL } from '@/lib/site';
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/StructuredData';
+import FestivalPopup from '@/components/FestivalPopup';
+import AIAssistant from '@/components/AIAssistant';
 
 export const metadata: Metadata = {
   title: {
     default: '紫微研究 - AI紫微斗数排盘与命理解读',
     template: '%s | 紫微研究',
   },
-  description: '紫微研究是基于倪海厦正宗紫微斗数体系的AI命理平台，提供紫微排盘、合盘、每日运势、测字抽签、AI面相手相、风水分析及修持打卡等综合服务',
-  keywords: '紫微斗数, 倪海厦, 紫微排盘, 命盘, 命理, 14主星, 12宫位, 合盘, 每日运势, 测字, 抽签, 面相, 手相, 风水, 修持打卡',
+  description: '紫微研究是基于倪海厦正宗紫微斗数体系的AI命理平台，提供紫微排盘、合盘、每日运势、测字抽签、AI面相手相、风水分析及修行等综合服务',
+  keywords: '紫微斗数, 倪海厦, 紫微排盘, 命盘, 命理, 14主星, 12宫位, 合盘, 每日运势, 测字, 抽签, 面相, 手相, 风水, 修行',
   metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: '/',
@@ -60,6 +62,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <LanguageProvider>
             <AuthProvider>
               <PageTracker />
+              <FestivalPopup />
+              <AIAssistant />
               {children}
             </AuthProvider>
           </LanguageProvider>

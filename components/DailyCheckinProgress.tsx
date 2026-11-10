@@ -49,7 +49,7 @@ export default function DailyCheckinProgress() {
     <div className="px-4 py-3" style={{ borderBottom: '1px solid var(--bdr)' }}>
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs" style={{ color: 'var(--tx-3)' }}>
-          {lang === 'zh' ? '每日打卡进度' : 'Daily Check-in Progress'}
+          {lang === 'zh' ? '每日修行进度' : 'Daily Check-in Progress'}
         </span>
         <span className="text-xs font-medium" style={{ color: 'var(--gold-solid)' }}>
           {completedCount}/6
@@ -78,7 +78,7 @@ export default function DailyCheckinProgress() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          {lang === 'zh' ? '🎉 今日六项打卡全部完成！' : '🎉 All 6 check-ins completed today!'}
+          {lang === 'zh' ? '🎉 今日六项修行全部完成！' : '🎉 All 6 check-ins completed today!'}
         </motion.p>
       )}
     </div>

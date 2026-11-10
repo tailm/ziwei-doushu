@@ -243,7 +243,7 @@ export default function NavigationBar() {
               background: isWellnessActive && !wellnessOpen ? c.activeBg : 'transparent',
             }}
           >
-            {lang === 'zh' ? '每日打卡' : 'Daily Check-in'}
+            {lang === 'zh' ? '每日修行' : 'Daily Check-in'}
             <svg className="w-3 h-3 transition-transform duration-200" viewBox="0 0 12 12" fill="none" style={{ transform: wellnessOpen ? 'rotate(180deg)' : 'none' }}>
               <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -301,6 +301,18 @@ export default function NavigationBar() {
           className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
           style={navItemStyle('/library')}>
           {t('nav_library', lang)}
+        </motion.a>
+        <motion.a
+          href="/heritage"
+          className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
+          style={navItemStyle('/heritage')}>
+          {t('nav_heritage', lang)}
+        </motion.a>
+        <motion.a
+          href="/cuisine"
+          className="text-[11px] sm:text-xs px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full transition-all duration-300"
+          style={navItemStyle('/cuisine')}>
+          {t('nav_cuisine', lang)}
         </motion.a>
         <motion.a
           href="/ranking"
